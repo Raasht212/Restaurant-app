@@ -1,80 +1,79 @@
-/* ----- ESTILOS ACTUALIZADOS CON TEXTO VINOTINTO ----- */
+/* ----- ESTILOS PARA QSS ----- */
 * {
-    color: #800020; /* Color vinotinto para todos los textos */
+    color: #800020;
     font-family: 'Segoe UI', 'Roboto', sans-serif;
 }
 
-/* ----- EFECTOS DE PROFUNDIDAD ----- */
+/* Contenedores / paneles */
 QFrame, QGroupBox, QTableWidget, QDialog {
     border-radius: 10px;
     background-color: #F5F5DC;
     border: 1px solid #800020;
 }
 
-/* ----- BOTONES MODERNOS ----- */
+/* Botones (sin transition/transform/box-shadow) */
 QPushButton {
     border-radius: 8px;
     padding: 10px 15px;
     font-weight: 600;
-    transition: all 0.3s;
     border: none;
     min-height: 35px;
-    background-color: #F5F5DC; /* Fondo claro para botones */
-    color: #800020; /* Texto vinotinto */
+    background-color: #F5F5DC;
+    color: #800020;
 }
-
 QPushButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    /* Cambio compatible: ligero color de fondo al pasar el mouse */
+    background-color: #efe6d6;
+}
+QPushButton:pressed {
+    background-color: #e6dccb;
 }
 
-/* ----- TABLAS MEJORADAS ----- */
+/* Tablas */
 QTableWidget {
     background-color: white;
     border-radius: 8px;
     gridline-color: #800020;
-    alternate-background-color: #F0E6D2; /* Fondo alterno claro */
+    alternate-background-color: #F0E6D2;
 }
-
 QHeaderView::section {
     background-color: #800020;
-    color: #F5F5DC; /* Texto claro en encabezados */
+    color: #F5F5DC;
     font-weight: bold;
     padding: 8px;
     border: none;
 }
 
-/* ----- ENTRADAS MODERNAS ----- */
+/* Entradas */
 QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {
     border-radius: 6px;
     padding: 8px 12px;
     border: 1px solid #800020;
     background-color: white;
     min-height: 35px;
-    color: #800020; /* Texto vinotinto */
+    color: #800020;
 }
-
 QLineEdit:focus, QComboBox:focus {
     border: 2px solid #800020;
 }
 
-/* ----- TÍTULOS DESTACADOS ----- */
+/* Título */
 QLabel#titulo {
     font-family: 'Montserrat', 'Segoe UI', sans-serif;
     font-weight: 700;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: #800020; /* Texto vinotinto */
+    color: #800020;
     padding: 10px 0;
     border-bottom: 2px solid #800020;
     margin-bottom: 15px;
 }
 
-/* Contenedor principal */
+/* Login container (gradiente simple soportado) */
 #login_container {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #800020, stop:1 #800020);
     border-radius: 20px;
-    box-shadow: 0 10px 30px #800020;
+    /* box-shadow no soportado en QSS: aplica QGraphicsDropShadowEffect desde Python si necesitas sombra */
 }
 
 /* Botón de ingreso */
@@ -83,21 +82,17 @@ QLabel#titulo {
     border-radius: 8px;
     font-size: 14pt;
     letter-spacing: 1px;
-    color: #F5F5DC; /* Texto claro para botón oscuro */
+    color: #F5F5DC;
 }
 
-/* Botones de mesa */
-MesaButton {
+/* MesaButton: usa objectName en lugar de selector de clase personalizada */
+QPushButton#mesa_button {
     border-radius: 15px;
-    transition: all 0.3s;
-    box-shadow: 0 4px 6px #800020;
-    background-color: #F5F5DC; /* Fondo claro */
-    color: #800020; /* Texto vinotinto */
+    background-color: #F5F5DC;
+    color: #800020;
 }
-
-MesaButton:hover {
-    transform: scale(1.03);
-    box-shadow: 0 8px 15px rgba(128, 0, 32, 0.5);
+QPushButton#mesa_button:hover {
+    background-color: #efe6d6;
 }
 
 /* Grupo de mesas */
@@ -105,64 +100,37 @@ QGroupBox {
     border-radius: 12px;
     margin-top: 10px;
     padding-top: 30px;
-    background-color: rgba(245, 245, 220, 0.9); /* Fondo más opaco */
-    color: #800020; /* Texto vinotinto */
+    background-color: rgba(245, 245, 220, 0.9);
+    color: #800020;
 }
-
 QGroupBox::title {
-    color: #800020; /* Texto vinotinto para títulos de grupo */
+    color: #800020;
 }
 
-/* Botones de acción */
-#btn_agregar { background-color: #27ae60; color: #F5F5DC; }
-#btn_editar { background-color: #3498db; color: #F5F5DC; }
-#btn_eliminar { background-color: #e74c3c; color: #F5F5DC; }
+/* Botones de acción por objectName */
+QPushButton#btn_agregar { background-color: #27ae60; color: #F5F5DC; }
+QPushButton#btn_editar { background-color: #3498db; color: #F5F5DC; }
+QPushButton#btn_eliminar { background-color: #e74c3c; color: #F5F5DC; }
 
 /* Formulario */
-#form_inventario QLabel {
-    font-weight: 600;
-    color: #800020; /* Texto vinotinto */
-}
+#form_inventario QLabel { font-weight: 600; color: #800020; }
 
-/* Tabla de productos */
-#tabla_productos {
-    border-radius: 8px;
-    color: #800020; /* Texto vinotinto */
-}
+/* Tabla de productos por id */
+QTableWidget#tabla_productos { border-radius: 8px; color: #800020; }
 
 /* Total */
-#label_total {
+QLabel#label_total {
     font-size: 16pt;
-    color: #800020; /* Texto vinotinto */
+    color: #800020;
     padding: 10px 15px;
     background-color: #F5F5DC;
     border-radius: 8px;
 }
 
-/* Mensajes de error */
-QMessageBox {
-    color: #800020; /* Texto vinotinto */
-}
+/* Mensajes y diálogos */
+QMessageBox, QDialog { color: #800020; background-color: #F5F5DC; }
 
-/* Diálogos */
-QDialog {
-    background-color: #F5F5DC;
-    color: #800020; /* Texto vinotinto */
-}
-
-/* Barra de estado */
-QStatusBar {
-    background-color: #F5F5DC;
-    color: #800020; /* Texto vinotinto */
-}
-
-/* Menús desplegables */
-QComboBox QAbstractItemView {
-    background-color: white;
-    color: #800020; /* Texto vinotinto */
-}
-
-/* Campos de selección */
-QComboBox {
-    color: #800020; /* Texto vinotinto */
-}
+/* Status bar y combo box views */
+QStatusBar { background-color: #F5F5DC; color: #800020; }
+QComboBox QAbstractItemView { background-color: white; color: #800020; }
+QComboBox { color: #800020; }

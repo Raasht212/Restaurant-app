@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication, QColorDialog, QPlainTextDocumentLayout
-from views.login import LoginWindow
+from views.login.login import LoginWindow
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction, QIcon, QFont, QColor, QPalette
 

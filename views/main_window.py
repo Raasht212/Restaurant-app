@@ -5,9 +5,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction, QIcon, QFont
 from views.mesas import MesasView
-from views.inventario import InventarioView
+from views.inventario.inventario import InventarioView
 from views.usuarios import UsuariosView
-from views.reportes import ReportesView
+from views.reportes.reportes import ReportesView
 from PySide6.QtCore import QPropertyAnimation, QEasingCurve
 
 def mostrar_mesas(self):
@@ -23,7 +23,7 @@ def animate_transition(self, widget):
     animation.start()
 
 try:
-    from views.reportes import ReportesView
+    from views.reportes.reportes import ReportesView
     tiene_reportes = True
 except ImportError:
     tiene_reportes = False
@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
         self.mostrar_mesas()
     
     def cerrar_sesion(self):
-        from views.login import LoginWindow
+        from views.login.login import LoginWindow
         self.login_window = LoginWindow()
         self.login_window.show()
         self.close()

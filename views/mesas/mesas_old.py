@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal, QSize
 from PySide6.QtGui import QIcon, QFont, QPixmap, QColor, QPainter
 from database import crear_conexion
-from views.orden import OrdenDialog
+from views.orden.orden import OrdenDialog
 
 class MesaButton(QPushButton):
     def __init__(self, mesa_data, parent=None):
