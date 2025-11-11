@@ -1,0 +1,168 @@
+/* ----- ESTILOS ACTUALIZADOS CON TEXTO VINOTINTO ----- */
+* {
+    color: #800020; /* Color vinotinto para todos los textos */
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* ----- EFECTOS DE PROFUNDIDAD ----- */
+QFrame, QGroupBox, QTableWidget, QDialog {
+    border-radius: 10px;
+    background-color: #F5F5DC;
+    border: 1px solid #800020;
+}
+
+/* ----- BOTONES MODERNOS ----- */
+QPushButton {
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+    min-height: 35px;
+    background-color: #F5F5DC; /* Fondo claro para botones */
+    color: #800020; /* Texto vinotinto */
+}
+
+QPushButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* ----- TABLAS MEJORADAS ----- */
+QTableWidget {
+    background-color: white;
+    border-radius: 8px;
+    gridline-color: #800020;
+    alternate-background-color: #F0E6D2; /* Fondo alterno claro */
+}
+
+QHeaderView::section {
+    background-color: #800020;
+    color: #F5F5DC; /* Texto claro en encabezados */
+    font-weight: bold;
+    padding: 8px;
+    border: none;
+}
+
+/* ----- ENTRADAS MODERNAS ----- */
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {
+    border-radius: 6px;
+    padding: 8px 12px;
+    border: 1px solid #800020;
+    background-color: white;
+    min-height: 35px;
+    color: #800020; /* Texto vinotinto */
+}
+
+QLineEdit:focus, QComboBox:focus {
+    border: 2px solid #800020;
+}
+
+/* ----- TÍTULOS DESTACADOS ----- */
+QLabel#titulo {
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #800020; /* Texto vinotinto */
+    padding: 10px 0;
+    border-bottom: 2px solid #800020;
+    margin-bottom: 15px;
+}
+
+/* Contenedor principal */
+#login_container {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #800020, stop:1 #800020);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px #800020;
+}
+
+/* Botón de ingreso */
+#btn_login {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #800020, stop:1 #a00030);
+    border-radius: 8px;
+    font-size: 14pt;
+    letter-spacing: 1px;
+    color: #F5F5DC; /* Texto claro para botón oscuro */
+}
+
+/* Botones de mesa */
+MesaButton {
+    border-radius: 15px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px #800020;
+    background-color: #F5F5DC; /* Fondo claro */
+    color: #800020; /* Texto vinotinto */
+}
+
+MesaButton:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 15px rgba(128, 0, 32, 0.5);
+}
+
+/* Grupo de mesas */
+QGroupBox {
+    border-radius: 12px;
+    margin-top: 10px;
+    padding-top: 30px;
+    background-color: rgba(245, 245, 220, 0.9); /* Fondo más opaco */
+    color: #800020; /* Texto vinotinto */
+}
+
+QGroupBox::title {
+    color: #800020; /* Texto vinotinto para títulos de grupo */
+}
+
+/* Botones de acción */
+#btn_agregar { background-color: #27ae60; color: #F5F5DC; }
+#btn_editar { background-color: #3498db; color: #F5F5DC; }
+#btn_eliminar { background-color: #e74c3c; color: #F5F5DC; }
+
+/* Formulario */
+#form_inventario QLabel {
+    font-weight: 600;
+    color: #800020; /* Texto vinotinto */
+}
+
+/* Tabla de productos */
+#tabla_productos {
+    border-radius: 8px;
+    color: #800020; /* Texto vinotinto */
+}
+
+/* Total */
+#label_total {
+    font-size: 16pt;
+    color: #800020; /* Texto vinotinto */
+    padding: 10px 15px;
+    background-color: #F5F5DC;
+    border-radius: 8px;
+}
+
+/* Mensajes de error */
+QMessageBox {
+    color: #800020; /* Texto vinotinto */
+}
+
+/* Diálogos */
+QDialog {
+    background-color: #F5F5DC;
+    color: #800020; /* Texto vinotinto */
+}
+
+/* Barra de estado */
+QStatusBar {
+    background-color: #F5F5DC;
+    color: #800020; /* Texto vinotinto */
+}
+
+/* Menús desplegables */
+QComboBox QAbstractItemView {
+    background-color: white;
+    color: #800020; /* Texto vinotinto */
+}
+
+/* Campos de selección */
+QComboBox {
+    color: #800020; /* Texto vinotinto */
+}
