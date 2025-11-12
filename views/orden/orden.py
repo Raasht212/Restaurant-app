@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (
     QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
     QHeaderView, QComboBox, QSpinBox, QMessageBox, QAbstractItemView
 )
+from PySide6.QtGui import QBrush, QColor
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 from .controller import (
@@ -12,7 +13,8 @@ from .controller import (
     obtener_detalles_orden,
     crear_o_actualizar_orden,
     aplicar_cambios_stock,
-    insertar_factura
+    insertar_factura,
+    cancelar_orden,
 )
 import datetime
 import random
@@ -51,7 +53,7 @@ class OrdenDialog(QDialog):
         cliente_layout.addWidget(QLabel("Nombre del Cliente:"))
         self.input_cliente = QLineEdit()
         self.input_cliente.setPlaceholderText("Ingrese nombre del cliente")
-        self.input_cliente.setMinimumHeight(32)
+        self.input_cliente.setMinimumHeight(30)
         cliente_layout.addWidget(self.input_cliente)
         layout.addLayout(cliente_layout)
 
@@ -83,8 +85,10 @@ class OrdenDialog(QDialog):
         right.addWidget(QLabel("Productos en la orden:"))
         self.tabla_productos = QTableWidget()
         self.tabla_productos.setColumnCount(5)
-        self.tabla_productos.setHorizontalHeaderLabels(["Producto", "Precio", "Cantidad", "Subtotal", ""])
-        self.tabla_productos.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tabla_productos.setHorizontalHeaderLabels(["Producto", "Precio", "Cantidad", "Subtotal", "Eliminar"])
+        header= self.tabla_productos.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.Stretch)
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
         self.tabla_productos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tabla_productos.setEditTriggers(QAbstractItemView.NoEditTriggers)
         right.addWidget(self.tabla_productos)
@@ -112,7 +116,7 @@ class OrdenDialog(QDialog):
 
         btn_cancel = QPushButton("Cancelar")
         btn_cancel.setStyleSheet("background-color: #e74c3c; color: #fff;")
-        btn_cancel.clicked.connect(self.reject)
+        btn_cancel.clicked.connect(self.cancelar_orden)
 
         total_layout.addWidget(btn_cancel)
         total_layout.addWidget(self.btn_confirmar)
@@ -203,14 +207,17 @@ class OrdenDialog(QDialog):
             precio_item = QTableWidgetItem(f"${producto['precio']:.2f}")
             cantidad_item = QTableWidgetItem(str(producto["cantidad"]))
             subtotal_item = QTableWidgetItem(f"${producto['subtotal']:.2f}")
-
+            
             self.tabla_productos.setItem(fila, 0, nombre_item)
             self.tabla_productos.setItem(fila, 1, precio_item)
             self.tabla_productos.setItem(fila, 2, cantidad_item)
             self.tabla_productos.setItem(fila, 3, subtotal_item)
+            self.tabla_productos.setItem(fila, 4, QTableWidgetItem())
+            self.tabla_productos.item(fila, 4).setBackground(QColor("#991212"))
+            self.tabla_productos.item(fila, 4).setForeground(QColor("#FFFFFF"))
 
-            btn_eliminar = QPushButton("Eliminar")
-            btn_eliminar.setStyleSheet("background-color: #e74c3c; color: white;")
+            btn_eliminar = QPushButton("")
+            btn_eliminar.setStyleSheet("background: transparent;")
             pid = producto["id"]
             btn_eliminar.clicked.connect(lambda _, prod_id=pid: self.eliminar_producto_por_id(prod_id))
             self.tabla_productos.setCellWidget(fila, 4, btn_eliminar)
@@ -308,6 +315,37 @@ class OrdenDialog(QDialog):
             self.estado_mesa_cambiado.emit()
         except Exception:
             pass
+        
+    def cancelar_orden(self):
+        # 1. Verificar si hay una orden abierta
+        if not self.orden_id:
+            QMessageBox.information(self, "Cancelar", "No hay una orden activa para cancelar.")
+            self.close()
+            return
+        
+        # 2. Confirmación del usuario
+        respuesta = QMessageBox.question(
+            self, 
+            "Confirmar Cancelación", 
+            "¿Está seguro de que desea CANCELAR esta orden y liberar la mesa?", 
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        if respuesta == QMessageBox.Yes:
+            # 3. Llamar a la función del controller
+            ok, err = cancelar_orden(self.orden_id)
+            
+            if ok:
+                QMessageBox.information(self, "Éxito", "Orden cancelada y mesa liberada correctamente.")
+                
+                # 4. Emitir señal y cerrar ventana
+                try:
+                    self.estado_mesa_cambiado.emit()
+                except Exception:
+                    pass
+                self.close()
+            else:
+                QMessageBox.critical(self, "Error", err or "No se pudo cancelar la orden.")
 
     # -----------------------
     # Facturación

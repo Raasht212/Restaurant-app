@@ -113,6 +113,44 @@ def crear_o_actualizar_orden(
     finally:
         conexion.close()
 
+def cancelar_orden(orden_id: int) -> Tuple[bool, Optional[str]]:
+    """
+    Marca la orden como 'cancelada' y libera la mesa asociada.
+    """
+    conexion = crear_conexion()
+    if not conexion:
+        return False, "No se pudo conectar a la base de datos"
+    
+    try:
+        cur = conexion.cursor()
+        
+        # 1. Obtener el ID de la mesa asociada a la orden
+        cur.execute("SELECT mesa_id FROM ordenes WHERE id = ?", (orden_id,))
+        row = cur.fetchone()
+        
+        if not row:
+            return False, f"Orden con ID {orden_id} no encontrada."
+        
+        mesa_id = row[0]
+        
+        # 2. Actualizar el estado de la orden a 'cancelada'
+        # Esto es un soft delete para mantener el historial
+        cur.execute("UPDATE ordenes SET estado = 'abierta' WHERE id = ?", (orden_id,))
+        
+        # 3. Liberar la mesa
+        cur.execute("UPDATE mesas SET estado = 'libre' WHERE id = ?", (mesa_id,))
+        
+        # 4. Confirmar la transacción
+        conexion.commit()
+        return True, None
+        
+    except Exception as e:
+        conexion.rollback() # Deshacer si algo falla
+        return False, str(e)
+        
+    finally:
+        conexion.close()
+
 def aplicar_cambios_stock(cambios: Dict[int, int]) -> Tuple[bool, Optional[str]]:
     """
     Aplica cambios sobre stock: cambios[producto_id] = diferencia (puede ser negativo).
