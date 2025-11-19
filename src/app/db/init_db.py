@@ -11,6 +11,7 @@ def inicializar_base_datos() -> bool:
         """CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
+            apellido TEXT,
             usuario TEXT UNIQUE NOT NULL,
             clave TEXT NOT NULL,
             rol TEXT NOT NULL
@@ -35,6 +36,7 @@ def inicializar_base_datos() -> bool:
             estado TEXT NOT NULL DEFAULT 'abierta',
             total REAL DEFAULT 0,
             fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            actualizado_en TIMESTAMP,
             cerrado_en TIMESTAMP,
             FOREIGN KEY (mesa_id) REFERENCES mesas (id)
         )""",
@@ -60,6 +62,11 @@ def inicializar_base_datos() -> bool:
         """CREATE TABLE IF NOT EXISTS secciones (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT UNIQUE NOT NULL
+        )""",
+        """CREATE TABLE IF NOT EXISTS tasas_cambio (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fecha DATE NOT NULL UNIQUE,
+            tasa REAL NOT NULL
         )""",
     ]
 
@@ -103,8 +110,8 @@ def inicializar_base_datos() -> bool:
             cur.execute("SELECT COUNT(*) FROM usuarios")
             if cur.fetchone()[0] == 0:
                 cur.execute(
-                    "INSERT INTO usuarios (nombre, usuario, clave, rol) VALUES (?, ?, ?, ?)",
-                    ("Administrador", "admin", "admin", "admin")
+                    "INSERT INTO usuarios (nombre, apellido ,usuario, clave, rol) VALUES (?, ?, ?, ?, ?)",
+                    ("Administrador", "", "admin", "admin", "admin")
                 )
                 
                 

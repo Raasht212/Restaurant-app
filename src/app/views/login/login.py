@@ -29,21 +29,10 @@ class LoginWindow(QWidget):
         layout.setSpacing(25)
         layout.setContentsMargins(40, 40, 40, 40)
         
-        # Logo
-        logo_label = QLabel()
-        icon_path = BASE_DIR.joinpath("src","app","resources", "icons", "logo3.png")
-        pixmap = QPixmap(str(icon_path))
-        if not pixmap.isNull():
-            pixmap = pixmap.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            logo_label.setPixmap(pixmap)
-        logo_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(logo_label)
-        
         # Título
         titulo = QLabel("SISTEMA RESTAURANTE")
         titulo.setFont(QFont("Arial", 20, QFont.Bold))
         titulo.setAlignment(Qt.AlignCenter)
-        #titulo.setStyleSheet("color: #800020;")
         layout.addWidget(titulo)
         
         # Campos de entrada

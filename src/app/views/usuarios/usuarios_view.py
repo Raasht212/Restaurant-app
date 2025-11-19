@@ -1,7 +1,13 @@
 # src/app/views/usuarios/usuarios_view.py
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QHBoxLayout, QMessageBox, QDialog
-from PySide6.QtGui import QFont
-from PySide6.QtCore import Qt
+from functools import partial
+
+from PySide6.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget,
+    QTableWidgetItem, QHeaderView, QHBoxLayout, QMessageBox,
+    QDialog, QWidgetItem, QAbstractItemView
+)
+from PySide6.QtGui import QFont, QIcon
+from PySide6.QtCore import Qt, QSize
 
 from .nuevo_usuario_dialog import NuevoUsuarioDialog
 from .editar_usuario_dialog import EditarUsuarioDialog
@@ -10,6 +16,7 @@ from ...services.usuarios_service import (
     obtener_usuario_por_id,
     eliminar_usuario_por_id
 )
+
 
 class UsuariosView(QWidget):
     def __init__(self, es_admin=True):
@@ -46,53 +53,20 @@ class UsuariosView(QWidget):
             layout.addWidget(btn_agregar)
 
         self.tabla_usuarios = QTableWidget()
-        self.tabla_usuarios.setColumnCount(4)
-        self.tabla_usuarios.setHorizontalHeaderLabels(["ID", "Usuario", "Clave", "Rol"])
+        # Columnas: ID, Nombre, Apellido, Usuario, Rol, Acciones
+        self.tabla_usuarios.setColumnCount(5)
+        self.tabla_usuarios.setHorizontalHeaderLabels(
+            ["Nombre", "Apellido", "Usuario", "Rol", "Acciones"]
+        )
         self.tabla_usuarios.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tabla_usuarios.setSelectionBehavior(QTableWidget.SelectRows)
         self.tabla_usuarios.setEditTriggers(QTableWidget.NoEditTriggers)
         layout.addWidget(self.tabla_usuarios)
 
+        # Si es admin mostramos botones globales opcionales (ya no necesarios)
         if self.es_admin:
-            btn_layout = QHBoxLayout()
-            btn_layout.setAlignment(Qt.AlignCenter)
-            btn_layout.setSpacing(30)
-
-            btn_editar = QPushButton("Editar Usuario")
-            btn_editar.setMinimumHeight(50)
-            btn_editar.setStyleSheet("""
-                QPushButton {
-                    background-color: #3498db;
-                    color: #333333;
-                    font-weight: bold;
-                    border-radius: 5px;
-                    padding: 10px;
-                }
-                QPushButton:hover {
-                    background-color: #2980b9;
-                }
-            """)
-            btn_editar.clicked.connect(self.editar_usuario)
-
-            btn_eliminar = QPushButton("Eliminar Usuario")
-            btn_eliminar.setMinimumHeight(50)
-            btn_eliminar.setStyleSheet("""
-                QPushButton {
-                    background-color: #e74c3c;
-                    color: #333333;
-                    font-weight: bold;
-                    border-radius: 5px;
-                    padding: 10px;
-                }
-                QPushButton:hover {
-                    background-color: #c0392b;
-                }
-            """)
-            btn_eliminar.clicked.connect(self.eliminar_usuario)
-
-            btn_layout.addWidget(btn_editar)
-            btn_layout.addWidget(btn_eliminar)
-            layout.addLayout(btn_layout)
+            # dejamos espacio para posibles acciones globales
+            pass
         else:
             mensaje = QLabel("Solo los administradores pueden gestionar usuarios")
             mensaje.setFont(QFont("Arial", 12))
@@ -103,43 +77,106 @@ class UsuariosView(QWidget):
         self.setLayout(layout)
         self.cargar_usuarios()
 
+    def _crear_widget_acciones(self, usuario_id):
+        """Crea un QWidget con los botones Editar y Eliminar para insertar en la celda."""
+        container = QWidget()
+        layout = QHBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
+
+        btn_editar = QPushButton("")
+        btn_editar.setStyleSheet("""
+            QPushButton {
+                background-color: #3498db;
+                color: #fff;
+                border-radius: 4px;
+                padding: 6px 8px;
+            }
+            QPushButton:hover { background-color: #2980b9; }
+        """)
+        btn_editar.setFixedSize(QSize(45, 25))
+        btn_editar.setCursor(Qt.PointingHandCursor)
+        btn_editar.setIcon(QIcon("src/app/resources/icons/editar.png"))
+        btn_editar.clicked.connect(partial(self._on_editar_click, usuario_id))
+
+        btn_eliminar = QPushButton("")
+        btn_eliminar.setStyleSheet("""
+            QPushButton {
+                background-color: #e74c3c;
+                color: #fff;
+                border-radius: 4px;
+                padding: 6px 8px;
+            }
+            QPushButton:hover { background-color: #c0392b; }
+        """)
+        btn_eliminar.setFixedSize(QSize(45, 25))
+        btn_eliminar.setCursor(Qt.PointingHandCursor)
+        btn_eliminar.setIcon(QIcon("src/app/resources/icons/eliminar.png"))
+        btn_eliminar.clicked.connect(partial(self._on_eliminar_click, usuario_id))
+
+        layout.addWidget(btn_editar)
+        layout.addWidget(btn_eliminar)
+
+        return container
+
     def cargar_usuarios(self):
         usuarios = obtener_usuarios()
+        # usuarios expected: list of tuples.
+        # support multiple shapes:
+        # (id, nombre, apellido, usuario, rol)
+        # (id, nombre, usuario, rol)
+        # (id, nombre, apellido, usuario, clave, rol)
         self.tabla_usuarios.setRowCount(len(usuarios))
         for row, usuario in enumerate(usuarios):
-            # usuarios_service devuelve (id, usuario, rol)
             uid = usuario[0]
-            usuario_nombre = usuario[1]
-            rol = usuario[2] if len(usuario) > 2 else ""
-            self.tabla_usuarios.setItem(row, 0, QTableWidgetItem(str(uid)))
-            self.tabla_usuarios.setItem(row, 1, QTableWidgetItem(usuario_nombre))
-            # Mostrar placeholder por seguridad, no la clave real
-            self.tabla_usuarios.setItem(row, 2, QTableWidgetItem("••••••"))
+            # defensively extract fields
+            nombre = ""
+            apellido = ""
+            usuario_nombre = ""
+            rol = ""
+            if len(usuario) >= 5:
+                # likely (id, nombre, apellido, usuario, rol) or (id,nombre,apellido,usuario,clave,rol)
+                nombre = usuario[1]
+                # if position 2 is apellido (string and not role)
+                apellido = usuario[2] if isinstance(usuario[2], str) else ""
+                # usuario (username) likely at pos 3
+                usuario_nombre = usuario[3] if len(usuario) > 3 else ""
+                # try to find rol at last position
+                rol = usuario[-1] if isinstance(usuario[-1], str) else ""
+            else:
+                # fallback older shape (id, nombre, usuario, rol)
+                nombre = usuario[1] if len(usuario) > 1 else ""
+                usuario_nombre = usuario[2] if len(usuario) > 2 else ""
+                rol = usuario[3] if len(usuario) > 3 else ""
+
+            
+            self.tabla_usuarios.setItem(row, 0, QTableWidgetItem(nombre))
+            self.tabla_usuarios.setItem(row, 1, QTableWidgetItem(apellido))
+            self.tabla_usuarios.setItem(row, 2, QTableWidgetItem(usuario_nombre))
             self.tabla_usuarios.setItem(row, 3, QTableWidgetItem(rol))
+
+            # acciones: widget con botones
+            acciones_widget = self._crear_widget_acciones(uid)
+            self.tabla_usuarios.setCellWidget(row, 4, acciones_widget)
+
+        # Ajustes de visualización adicionales
+        self.tabla_usuarios.resizeRowsToContents()
 
     def agregar_usuario(self):
         dialog = NuevoUsuarioDialog(self)
         if dialog.exec() == QDialog.Accepted:
             self.cargar_usuarios()
 
-    def editar_usuario(self):
-        fila = self.tabla_usuarios.currentRow()
-        if fila < 0:
-            QMessageBox.warning(self, "Error", "Seleccione un usuario para editar")
-            return
-        usuario_id = int(self.tabla_usuarios.item(fila, 0).text())
+    def _on_editar_click(self, usuario_id):
         usuario_data = obtener_usuario_por_id(usuario_id)
-        if usuario_data:
-            dialog = EditarUsuarioDialog(usuario_data, self)
-            if dialog.exec() == QDialog.Accepted:
-                self.cargar_usuarios()
-
-    def eliminar_usuario(self):
-        fila = self.tabla_usuarios.currentRow()
-        if fila < 0:
-            QMessageBox.warning(self, "Error", "Seleccione un usuario para eliminar")
+        if not usuario_data:
+            QMessageBox.warning(self, "Error", "No se encontró el usuario")
             return
-        usuario_id = int(self.tabla_usuarios.item(fila, 0).text())
+        dialog = EditarUsuarioDialog(usuario_data, self)
+        if dialog.exec() == QDialog.Accepted:
+            self.cargar_usuarios()
+
+    def _on_eliminar_click(self, usuario_id):
         if usuario_id == 1:
             QMessageBox.warning(self, "Error", "No se puede eliminar al administrador principal")
             return

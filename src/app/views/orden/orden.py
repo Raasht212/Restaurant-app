@@ -1,21 +1,19 @@
-# src/app/views/orden/orden.py
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel,
     QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
-    QHeaderView, QComboBox, QSpinBox, QMessageBox, QAbstractItemView
+    QHeaderView, QComboBox, QSpinBox, QMessageBox, QAbstractItemView, QGroupBox
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 
-from ...controllers.orden_controller import confirmar_orden_flow, generar_factura_flow
-from ...services.orden_service import (
-    obtener_productos_disponibles,
-    consultar_stock,
-    obtener_orden_abierta_por_mesa,
-    obtener_detalles_orden,
-)
+# Importar módulos (evita ciclos importando módulos completos cuando haya riesgo)
+from ...controllers import orden_controller as orden_controller_module
+from ...services import orden_service as orden_service_module
+from ...services import conversion_service
+
 import datetime
 import random
+
 
 class OrdenDialog(QDialog):
     estado_mesa_cambiado = Signal()
@@ -58,38 +56,46 @@ class OrdenDialog(QDialog):
         # Productos / selector
         productos_layout = QHBoxLayout()
 
-        left = QVBoxLayout()
-        left.addWidget(QLabel("Productos Disponibles:"))
+        # --- Contenedor izquierdo ---
+        left_container = QGroupBox("Productos disponibles")
+        left = QVBoxLayout(left_container)
+
         self.combo_productos = QComboBox()
         self.combo_productos.setMinimumHeight(32)
         left.addWidget(self.combo_productos)
 
         cantidad_layout = QHBoxLayout()
         self.spin_cantidad = QSpinBox()
-        self.spin_cantidad.setMinimum(1)
-        self.spin_cantidad.setMaximum(1000)
+        self.spin_cantidad.setRange(1, 1000)
         self.spin_cantidad.setValue(1)
         cantidad_layout.addWidget(QLabel("Cantidad:"))
         cantidad_layout.addWidget(self.spin_cantidad)
         left.addLayout(cantidad_layout)
 
         btn_agregar = QPushButton("Agregar")
+        btn_agregar.setStyleSheet("background-color: #2980b9; color: white;")
         btn_agregar.clicked.connect(self.agregar_producto)
         left.addWidget(btn_agregar)
-        productos_layout.addLayout(left, 3)
 
-        # Tabla de la orden
-        right = QVBoxLayout()
-        right.addWidget(QLabel("Productos en la orden:"))
+        # --- Contenedor derecho ---
+        right_container = QGroupBox("Productos en la orden")
+        right = QVBoxLayout(right_container)
+
         self.tabla_productos = QTableWidget()
         self.tabla_productos.setColumnCount(5)
-        self.tabla_productos.setHorizontalHeaderLabels(["Producto", "Precio", "Cantidad", "Subtotal", ""])
+        self.tabla_productos.setHorizontalHeaderLabels(
+            ["Producto", "Precio", "Cantidad", "Subtotal", ""]
+        )
         self.tabla_productos.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tabla_productos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tabla_productos.setEditTriggers(QAbstractItemView.NoEditTriggers)
         right.addWidget(self.tabla_productos)
-        productos_layout.addLayout(right, 5)
 
+        # Añadir ambos contenedores al layout principal con proporción
+        productos_layout.addWidget(left_container, stretch=3)
+        productos_layout.addWidget(right_container, stretch=5)
+
+        # Añadir al layout general de la ventana
         layout.addLayout(productos_layout)
 
         # Total y botones
@@ -97,8 +103,12 @@ class OrdenDialog(QDialog):
         total_layout.addWidget(QLabel("Total:"))
         self.label_total = QLabel("$0.00")
         self.label_total.setFont(QFont("Arial", 14, QFont.Bold))
-        self.label_total.setStyleSheet("color: #e74c3c;")
+        self.label_total.setStyleSheet("color: #00B03A;")
+        self.label_total_bolivares = QLabel(" - VES")
+        self.label_total_bolivares.setFont(QFont("Arial", 14, QFont.Bold))
+        self.label_total_bolivares.setStyleSheet("color: #4A5FFF;")
         total_layout.addWidget(self.label_total)
+        total_layout.addWidget(self.label_total_bolivares)
         total_layout.addStretch()
 
         self.btn_confirmar = QPushButton("Confirmar Orden")
@@ -110,25 +120,32 @@ class OrdenDialog(QDialog):
         self.btn_factura.clicked.connect(self.generar_factura)
         self.btn_factura.setVisible(False)
 
-        btn_cancel = QPushButton("Cancelar")
-        btn_cancel.setStyleSheet("background-color: #e74c3c; color: #fff;")
-        btn_cancel.clicked.connect(self.reject)
+        self.btn_cancelar = QPushButton("Cancelar Orden")
+        self.btn_cancelar.setStyleSheet("background-color: #e74c3c; color: #fff;")
+        self.btn_cancelar.clicked.connect(self.cancelar_orden)
+        self.btn_cancelar.setVisible(False)
 
-        total_layout.addWidget(btn_cancel)
+        btn_salir = QPushButton("Salir")
+        btn_salir.clicked.connect(self.reject)
+
+        total_layout.addWidget(btn_salir)
         total_layout.addWidget(self.btn_confirmar)
         total_layout.addWidget(self.btn_factura)
+        total_layout.addWidget(self.btn_cancelar)
         layout.addLayout(total_layout)
 
         # Inicializar datos
         self.cargar_productos()
-        orden_abierta = obtener_orden_abierta_por_mesa(self.mesa[0])
+        orden_abierta = orden_service_module.obtener_orden_abierta_por_mesa(self.mesa[0])
         if orden_abierta:
             # orden_abierta: (id, cliente_nombre, total)
             self.orden_id = orden_abierta[0]
+            self.btn_factura.setVisible(True)
+            self.btn_cancelar.setVisible(True)
+            self.btn_confirmar.setVisible(False)
             self.input_cliente.setText(orden_abierta[1] or "")
             self.cargar_detalles_orden()
             self.input_cliente.setEnabled(False)
-            self.btn_factura.setVisible(True)
         else:
             self.productos_seleccionados = []
             self.detalles_originales = {}
@@ -139,7 +156,7 @@ class OrdenDialog(QDialog):
     # -----------------------
     def cargar_productos(self):
         self.combo_productos.clear()
-        filas = obtener_productos_disponibles()
+        filas = orden_service_module.obtener_productos_disponibles()
         self._productos_map = {}
         for pid, nombre, precio, stock in filas:
             display = f"{nombre} - ${float(precio):.2f}"
@@ -158,10 +175,14 @@ class OrdenDialog(QDialog):
             return
 
         cantidad = int(self.spin_cantidad.value())
+        if cantidad <= 0:
+            QMessageBox.warning(self, "Error", "Cantidad inválida")
+            return
+
         nombre = prod_info["nombre"]
         precio = float(prod_info["precio"])
 
-        stock_disponible = consultar_stock(producto_id)
+        stock_disponible = orden_service_module.consultar_stock(producto_id)
         if stock_disponible is None:
             QMessageBox.warning(self, "Error", "No se pudo consultar stock")
             return
@@ -192,7 +213,13 @@ class OrdenDialog(QDialog):
                 "subtotal": round(precio * cantidad, 2)
             })
 
+        # ... lógica de agregar ...
         self.actualizar_tabla_productos()
+            # Si la orden ya estaba confirmada, volver a modo actualización
+        if self.orden_id:
+            self.btn_factura.setVisible(False)
+            self.btn_cancelar.setVisible(False)
+            self.btn_confirmar.setVisible(True)
 
     def actualizar_tabla_productos(self):
         self.tabla_productos.clearContents()
@@ -217,8 +244,19 @@ class OrdenDialog(QDialog):
             self.tabla_productos.setCellWidget(fila, 4, btn_eliminar)
 
             total += float(producto["subtotal"])
+            
 
         self.label_total.setText(f"${total:.2f}")
+
+        # Convertir total a bolívares
+        fecha_hoy = datetime.date.today().isoformat()
+        tasa = conversion_service.obtener_tasa(fecha_hoy)
+        if tasa is not None:
+            total_bolivares = round(total * tasa, 2)
+            self.label_total_bolivares.setText(f"{total_bolivares:.2f} VES (Tasa: {tasa:.2f})")
+        else:
+            self.label_total_bolivares.setText(" - VES")
+        
 
     def eliminar_producto_por_id(self, producto_id):
         antes = len(self.productos_seleccionados)
@@ -226,13 +264,21 @@ class OrdenDialog(QDialog):
         if len(self.productos_seleccionados) != antes:
             self.actualizar_tabla_productos()
 
+        self.actualizar_tabla_productos()
+        if self.orden_id:
+            self.btn_factura.setVisible(False)
+            self.btn_cancelar.setVisible(False)
+            self.btn_confirmar.setVisible(True)
+        
+
+
     # -----------------------
     # Cargar / guardar orden en BD (usa controller)
     # -----------------------
     def cargar_detalles_orden(self):
         if not self.orden_id:
             return
-        detalles = obtener_detalles_orden(self.orden_id)
+        detalles = orden_service_module.obtener_detalles_orden(self.orden_id)
         self.detalles_originales = {}
         self.productos_seleccionados = []
         for pid, nombre, precio, cantidad, subtotal in detalles:
@@ -253,6 +299,8 @@ class OrdenDialog(QDialog):
         return round(sum(float(p["subtotal"]) for p in self.productos_seleccionados), 2)
 
     def confirmar_orden(self):
+        
+
         cliente = self.input_cliente.text().strip()
         if not cliente and not self.orden_id:
             QMessageBox.warning(self, "Error", "Debe ingresar el nombre del cliente")
@@ -260,8 +308,9 @@ class OrdenDialog(QDialog):
         if not self.productos_seleccionados:
             QMessageBox.warning(self, "Error", "Debe agregar al menos un producto a la orden")
             return
+        
 
-        ok, orden_id, err = confirmar_orden_flow(
+        ok, orden_id, err = orden_controller_module.confirmar_orden_flow(
             mesa_id=self.mesa[0],
             cliente=cliente,
             productos_seleccionados=self.productos_seleccionados,
@@ -281,6 +330,9 @@ class OrdenDialog(QDialog):
         }
         self.input_cliente.setEnabled(False)
         self.btn_factura.setVisible(True)
+        self.btn_cancelar.setVisible(True)
+        self.btn_confirmar.setVisible(False)
+
         try:
             self.estado_mesa_cambiado.emit()
         except Exception:
@@ -294,9 +346,25 @@ class OrdenDialog(QDialog):
             QMessageBox.warning(self, "Error", "La orden no tiene productos")
             return
 
+        reply = QMessageBox.question(
+            self,
+            "Confirmar facturación",
+            "¿Desea generar la factura para esta orden?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply != QMessageBox.Yes:
+            return  # el usuario canceló
+
         total = self._calcular_total()
         numero_factura = f"FACT-{datetime.datetime.now().strftime('%Y%m%d')}-{random.randint(1000, 9999)}"
-        ok, err = generar_factura_flow(self.orden_id, self.input_cliente.text().strip() or "Consumidor", float(total), numero_factura)
+        ok, err = orden_controller_module.generar_factura_flow(
+            self.orden_id,
+            self.input_cliente.text().strip() or "Consumidor",
+            float(total),
+            numero_factura
+        )
         if not ok:
             QMessageBox.critical(self, "Error", err or "No se pudo generar la factura")
             return
@@ -307,7 +375,7 @@ class OrdenDialog(QDialog):
         except Exception:
             pass
 
-        # Limpiar estado local para nueva orden
+        # limpiar estado local
         self.productos_seleccionados = []
         self.orden_id = None
         self.detalles_originales = {}
@@ -315,6 +383,8 @@ class OrdenDialog(QDialog):
         self.input_cliente.clear()
         self.input_cliente.setEnabled(True)
         self.btn_factura.setVisible(False)
+        self.btn_cancelar.setVisible(False)
+        self.btn_confirmar.setVisible(True)
 
     def mostrar_resumen_factura(self, numero_factura, total):
         def esc(text):
@@ -363,3 +433,33 @@ class OrdenDialog(QDialog):
         msg_box.setText(mensaje)
         msg_box.setStandardButtons(QMessageBox.Ok)
         msg_box.exec()
+
+    def cancelar_orden(self):
+        reply = QMessageBox.question(
+            self,
+            "Confirmar cancelación",
+            "¿Está seguro de que desea cancelar la orden?\nSe devolverá el stock y se eliminará la orden.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            if self.orden_id:
+                from ...services.orden_service import ConnectionManager
+                with ConnectionManager() as conn:
+                    cur = conn.cursor()
+                    for pid, det in self.detalles_originales.items():
+                        cantidad = det.get("cantidad_actual", 0)
+                        cur.execute("UPDATE productos SET stock = stock + ? WHERE id = ?", (cantidad, pid))
+                    cur.execute("DELETE FROM orden_detalles WHERE orden_id = ?", (self.orden_id,))
+                    cur.execute("DELETE FROM ordenes WHERE id = ?", (self.orden_id,))
+                    cur.execute("UPDATE mesas SET estado = 'libre' WHERE id = ?", (self.mesa[0],))
+
+            self.productos_seleccionados = []
+            self.detalles_originales = {}
+            self.orden_id = None
+
+            self.btn_factura.setVisible(False)
+            self.btn_cancelar.setVisible(False)
+            self.btn_confirmar.setVisible(True)
+            self.reject()

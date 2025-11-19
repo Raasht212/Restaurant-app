@@ -1,147 +1,103 @@
-# src/app/views/main_window.py
-from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel,
-    QStackedWidget, QToolBar, QStatusBar, QMessageBox, 
-)
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon, QFont, QAction
+from PySide6.QtWidgets import QMainWindow, QStackedWidget, QVBoxLayout
+from PySide6.QtCore import QSize
+from PySide6.QtGui import QIcon
 
-# Vistas (imports relativos dentro del paquete)
+from src.app.views.ui_mainwindow import Ui_MainWindow
+
+# Vistas
 from src.app.views.mesas.mesas_view import MesasView
 from src.app.views.inventario.inventario import InventarioView
+from src.app.views.reportes.reportes_view import ReportesView
+from src.app.views.conversion.tasaview import TasaView
 from src.app.views.usuarios.usuarios_view import UsuariosView
-
-
-# Intentamos importar ReportesView; si no existe, seguir sin él
-try:
-    from .reportes.reportes_view import ReportesView
-    _HAS_REPORTES = True
-except Exception:
-    _HAS_REPORTES = False
+from src.app.views.dashboard.dashboard_view import DashboardView  # si tienes dashboard
 
 class MainWindow(QMainWindow):
     def __init__(self, usuario):
         super().__init__()
         self.usuario = usuario
-        self.setWindowTitle("Sistema de Gestión de Restaurante")
-        self.setMinimumSize(1200, 800)
-        self.setup_ui()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
-    def setup_ui(self):
-        central_widget = QWidget()
-        main_layout = QVBoxLayout()
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.setSpacing(0)
+        # ✅ Asignar layout manualmente a self.ui.main
+        layout_main = QVBoxLayout(self.ui.main)
+        self.ui.main.setLayout(layout_main)
 
-        # Toolbar
-        toolbar = QToolBar("Menú Principal")
-        toolbar.setMovable(False)
-        toolbar.setIconSize(QSize(32, 32))
-        self.addToolBar(toolbar)
-
-        # Stacked widget para vistas
+        # Crear stacked widget y añadirlo al layout
         self.stacked_widget = QStackedWidget()
+        layout_main.addWidget(self.stacked_widget)
+
 
         # Instanciar vistas
+        self.dashboard_view = DashboardView()
         self.mesas_view = MesasView()
         self.inventario_view = InventarioView(es_admin=(self.usuario[2] == "admin"))
+        self.reportes_view = ReportesView()
+        self.tasa_view = TasaView()
         self.usuarios_view = UsuariosView(es_admin=(self.usuario[2] == "admin"))
 
-        # Añadir reportes solo si está disponible
-        if _HAS_REPORTES:
-            self.reportes_view = ReportesView()
-            self.stacked_widget.addWidget(self.reportes_view)
+        # Añadir vistas al stacked
+        self.stacked_widget.addWidget(self.dashboard_view)   # index 0
+        self.stacked_widget.addWidget(self.mesas_view)       # index 1
+        self.stacked_widget.addWidget(self.inventario_view)  # index 2
+        self.stacked_widget.addWidget(self.reportes_view)    # index 3
+        self.stacked_widget.addWidget(self.tasa_view)        # index 4
+        self.stacked_widget.addWidget(self.usuarios_view)    # index 5
 
-        # Añadir las demás vistas
-        self.stacked_widget.addWidget(self.mesas_view)
-        self.stacked_widget.addWidget(self.inventario_view)
-        self.stacked_widget.addWidget(self.usuarios_view)
+        # Conectar botones del sidebar
+        self.ui.pushButton.clicked.connect(self.mostrar_dashboard)
+        self.ui.pushButton_3.clicked.connect(self.mostrar_mesas)
+        self.ui.pushButton_4.clicked.connect(self.mostrar_inventario)
+        self.ui.pushButton_5.clicked.connect(self.mostrar_reportes)
+        self.ui.pushButton_6.clicked.connect(self.mostrar_tasa)
+        self.ui.pushButton_7.clicked.connect(self.mostrar_usuarios)
+        self.ui.pushButton_9.clicked.connect(self.cerrar_sesion)
 
-        # Acciones del toolbar (añadir solo las que correspondan)
-        acciones = [
-            ("Mesas", "mesa.png", self.mostrar_mesas),
-            ("Inventario", "inventario.png", self.mostrar_inventario),
-        ]
-        if _HAS_REPORTES:
-            acciones.append(("Reportes", "reportes.png", self.mostrar_reportes))
-        if self.usuario and len(self.usuario) > 2 and self.usuario[2] == "admin":
-            acciones.append(("Usuarios", "usuarios.png", self.mostrar_usuarios))
+        # Vista por defecto
+        self.mostrar_dashboard()
 
-        for nombre, icono, funcion in acciones:
-            act = QAction(QIcon(f"resources/icons/{icono}"), nombre, self)
-            act.triggered.connect(funcion)
-            toolbar.addAction(act)
-            toolbar.addSeparator()
+    # Métodos para cambiar vistas y actualizar el label del sidebar
+    def mostrar_dashboard(self):
+        self.stacked_widget.setCurrentWidget(self.dashboard_view)
+        self.ui.label_2.setText("Dashboard")
 
-        # Status bar con info de usuario y botón cerrar sesión
-        status_bar = QStatusBar()
-        usuario_label = QLabel(f"Usuario: {self.usuario[1]} ({self.usuario[2]})")
-        usuario_label.setStyleSheet("font-weight: bold; color: #800020;")
-        status_bar.addPermanentWidget(usuario_label)
-
-        btn_cerrar_sesion = QPushButton("Cerrar Sesión")
-        btn_cerrar_sesion.setStyleSheet("""
-            QPushButton {
-                background-color: #e74c3c;
-                color: white;
-                padding: 5px;
-                border-radius: 3px;
-            }
-            QPushButton:hover {
-                background-color: #c0392b;
-            }
-        """)
-        btn_cerrar_sesion.clicked.connect(self.cerrar_sesion)
-        status_bar.addPermanentWidget(btn_cerrar_sesion)
-        self.setStatusBar(status_bar)
-
-        # Montar layout central
-        main_layout.addWidget(self.stacked_widget)
-        central_widget.setLayout(main_layout)
-        self.setCentralWidget(central_widget)
-
-        # Mostrar vista por defecto
-        self.mostrar_mesas()
-
-    # Métodos para cambiar vistas
     def mostrar_mesas(self):
         self.stacked_widget.setCurrentWidget(self.mesas_view)
+        self.ui.label_2.setText("Mesas")
         if hasattr(self.mesas_view, "actualizar_mesas"):
-            try:
-                self.mesas_view.actualizar_mesas()
-            except Exception:
-                pass
+            try: self.mesas_view.actualizar_mesas()
+            except Exception: pass
 
     def mostrar_inventario(self):
         self.stacked_widget.setCurrentWidget(self.inventario_view)
+        self.ui.label_2.setText("Inventario")
         if hasattr(self.inventario_view, "cargar_productos"):
-            try:
-                self.inventario_view.cargar_productos()
-            except Exception:
-                pass
+            try: self.inventario_view.cargar_productos()
+            except Exception: pass
+
+    def mostrar_reportes(self):
+        self.stacked_widget.setCurrentWidget(self.reportes_view)
+        self.ui.label_2.setText("Reportes")
+        if hasattr(self.reportes_view, "cargar_datos"):
+            try: self.reportes_view.cargar_datos()
+            except Exception: pass
+
+    def mostrar_tasa(self):
+        self.stacked_widget.setCurrentWidget(self.tasa_view)
+        self.ui.label_2.setText("Tasa del Día")
+        if hasattr(self.tasa_view, "cargar_historial"):
+            try: self.tasa_view.cargar_historial()
+            except Exception: pass
 
     def mostrar_usuarios(self):
         self.stacked_widget.setCurrentWidget(self.usuarios_view)
+        self.ui.label_2.setText("Usuarios")
         if hasattr(self.usuarios_view, "cargar_usuarios"):
-            try:
-                self.usuarios_view.cargar_usuarios()
-            except Exception:
-                pass
+            try: self.usuarios_view.cargar_usuarios()
+            except Exception: pass
 
-    def mostrar_reportes(self):
-        if not _HAS_REPORTES:
-            QMessageBox.information(self, "Reportes", "El módulo de reportes no está disponible")
-            return
-        self.stacked_widget.setCurrentWidget(self.reportes_view)
-        if hasattr(self.reportes_view, "cargar_datos"):
-            try:
-                self.reportes_view.cargar_datos()
-            except Exception:
-                pass
-
-    # Import local para romper import circular con login
     def cerrar_sesion(self):
-        from .login.login import LoginWindow  # import relativo dentro del método
+        from src.app.views.login.login import LoginWindow
         self.login_window = LoginWindow()
         self.login_window.show()
         self.close()

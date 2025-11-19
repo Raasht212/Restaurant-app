@@ -6,8 +6,8 @@
 
 /* Contenedores / paneles */
 QFrame, QGroupBox, QTableWidget, QDialog {
-    border-radius: 10px;
-    background-color: #1e1e1e; /* fondo oscuro */
+
+    background-color: #1d1d1d; /* fondo oscuro */
     border: 1px solid #444444;
 }
 
@@ -29,7 +29,6 @@ QPushButton:pressed {
 /* Tablas */
 QTableWidget {
     background-color: #2b2b2b;
-    border-radius: 8px;
     gridline-color: #444444;
     alternate-background-color: #333333;
     color: #ffffff;
@@ -38,7 +37,7 @@ QHeaderView::section {
     background-color: #444444;
     color: #ffffff;
     font-weight: bold;
-    padding: 8px;
+    padding: 6px;
     border: none;
 }
 
@@ -84,26 +83,18 @@ QLabel#titulo {
     color: #ffffff;
 }
 
-/* MesaButton */
-QPushButton#mesa_button {
-    border-radius: 15px;
-    background-color: #2d2d2d;
-    color: #ffffff;
-}
-QPushButton#mesa_button:hover {
-    background-color: #3c3c3c;
-}
+
 
 /* Grupo de mesas */
 QGroupBox {
     border-radius: 12px;
     margin-top: 10px;
     padding-top: 30px;
-    background-color: #2b2b2b;
+    background-color: rgba(40, 40, 40, 1);
     color: #ffffff;
 }
 QGroupBox::title {
-    color: #ffffff;
+    color: rgba(255, 255, 255, 1);
 }
 
 /* Botones de acción */
@@ -115,7 +106,7 @@ QPushButton#btn_eliminar { background-color: #e74c3c; color: #ffffff; }
 #form_inventario QLabel { font-weight: 600; color: #ffffff; }
 
 /* Tabla de productos */
-QTableWidget#tabla_productos { border-radius: 8px; color: #ffffff; }
+QTableWidget#tabla_productos { border-radius: 1px; color: #ffffff; }
 
 /* Total */
 QLabel#label_total {

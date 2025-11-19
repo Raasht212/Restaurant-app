@@ -12,7 +12,7 @@ class NuevoUsuarioDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Registrar Nuevo Usuario")
-        self.setFixedSize(500, 400)
+        self.setFixedSize(600, 600)
         self.setup_ui()
 
     def setup_ui(self):
@@ -21,19 +21,24 @@ class NuevoUsuarioDialog(QDialog):
         layout.setSpacing(20)
         layout.setContentsMargins(30, 30, 30, 30)
 
+
         titulo = QLabel("REGISTRAR NUEVO USUARIO")
         titulo.setFont(QFont("Arial", 16, QFont.Bold))
         titulo.setAlignment(Qt.AlignCenter)
-        titulo.setStyleSheet("color: #800020;")
         layout.addWidget(titulo)
 
         form_layout = QFormLayout()
         form_layout.setSpacing(15)
 
         self.input_nombre = QLineEdit()
-        self.input_nombre.setPlaceholderText("Nombre completo")
+        self.input_nombre.setPlaceholderText("Nombre")
         self.input_nombre.setMinimumHeight(45)
         self.input_nombre.setStyleSheet("padding: 10px;")
+
+        self.input_apellido = QLineEdit()
+        self.input_apellido.setPlaceholderText("Apellido")
+        self.input_apellido.setMinimumHeight(45)
+        self.input_apellido.setStyleSheet("padding: 10px;")
 
         self.input_usuario = QLineEdit()
         self.input_usuario.setPlaceholderText("Nombre de usuario")
@@ -58,6 +63,7 @@ class NuevoUsuarioDialog(QDialog):
         self.combo_rol.setStyleSheet("padding: 10px;")
 
         form_layout.addRow("Nombre:", self.input_nombre)
+        form_layout.addRow("Apellido:", self.input_apellido)
         form_layout.addRow("Usuario:", self.input_usuario)
         form_layout.addRow("Contraseña:", self.input_clave)
         form_layout.addRow("Confirmar:", self.input_confirmar_clave)
@@ -108,12 +114,13 @@ class NuevoUsuarioDialog(QDialog):
 
     def validar_registro(self):
         nombre = self.input_nombre.text().strip()
+        apellido = self.input_apellido.text().strip()
         usuario = self.input_usuario.text().strip()
         clave = self.input_clave.text()
         confirmar = self.input_confirmar_clave.text()
         rol = self.combo_rol.currentText()
 
-        if not nombre or not usuario or not clave or not confirmar:
+        if not nombre or not apellido or not usuario or not clave or not confirmar:
             QMessageBox.warning(self, "Error", "Todos los campos son obligatorios")
             return
 
@@ -125,7 +132,7 @@ class NuevoUsuarioDialog(QDialog):
             QMessageBox.warning(self, "Error", "La contraseña debe tener al menos 4 caracteres")
             return
 
-        ok, err = registrar_usuario(nombre, usuario, clave, rol)
+        ok, err = registrar_usuario(nombre, apellido, usuario, clave, rol)
         if ok:
             QMessageBox.information(self, "Éxito", "Usuario registrado correctamente")
             self.accept()

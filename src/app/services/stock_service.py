@@ -39,3 +39,17 @@ def aplicar_cambios_stock_atomic(cambios: Dict[int, int]) -> Tuple[bool, Optiona
         return True, None
     except Exception as e:
         return False, str(e)
+    
+def consultar_stock_batch(productos: Dict[int, int]) -> Dict[int, Optional[int]]:
+    """
+    Recibe un dict {producto_id: cantidad_solicitada}
+    Devuelve {producto_id: stock_actual} o None si no existe.
+    """
+    resultados = {}
+    with ConnectionManager() as conn:
+        cur = conn.cursor()
+        for pid in productos.keys():
+            cur.execute("SELECT stock FROM productos WHERE id = ?", (pid,))
+            row = cur.fetchone()
+            resultados[pid] = int(row[0]) if row else None
+    return resultados

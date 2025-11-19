@@ -5,18 +5,32 @@ import sqlite3
 
 from ..db.connection import ConnectionManager
 
-def _encriptar_clave(clave: str) -> str:
-    return hashlib.sha256(clave.encode("utf-8")).hexdigest()
 
 def obtener_usuarios() -> List[Tuple]:
     """
-    Devuelve lista de usuarios: [(id, usuario, rol), ...]
+    Devuelve lista de usuarios: [(id, nombre, apellido, usuario, rol), ...].
     (omitimos la clave en la respuesta por seguridad).
     """
     with ConnectionManager() as conn:
         cur = conn.cursor()
-        cur.execute("SELECT id, usuario, rol FROM usuarios ORDER BY id")
-        return cur.fetchall()
+        # Asegúrate de que la tabla 'usuarios' contiene las columnas nombre, apellido, usuario, rol
+        cur.execute("SELECT id, nombre, apellido, usuario, rol FROM usuarios ORDER BY id")
+        rows = cur.fetchall()
+
+    # Si por compatibilidad la tabla no tiene 'apellido' (esquema antiguo), normalizamos la salida
+    normalized = []
+    for r in rows:
+        # r esperado: (id, nombre, apellido, usuario, rol)
+        if len(r) == 5:
+            normalized.append(r)
+        else:
+            # fallback por si devuelve (id, usuario, rol) u otros formatos
+            # intentamos reconstruir: (id, nombre='', apellido='', usuario=r[1], rol=r[2])
+            if len(r) >= 3:
+                normalized.append((r[0], r[1] if len(r) > 1 else "", "" , r[2] if len(r) > 2 else "", r[3] if len(r) > 3 else ""))
+            else:
+                normalized.append((r[0], "", "", "", ""))
+    return normalized
 
 def obtener_usuario_por_id(usuario_id: int) -> Optional[Tuple]:
     """
@@ -25,10 +39,10 @@ def obtener_usuario_por_id(usuario_id: int) -> Optional[Tuple]:
     """
     with ConnectionManager() as conn:
         cur = conn.cursor()
-        cur.execute("SELECT id, nombre, usuario, rol FROM usuarios WHERE id = ?", (usuario_id,))
+        cur.execute("SELECT id, nombre, apellido, usuario, rol FROM usuarios WHERE id = ?", (usuario_id,))
         return cur.fetchone()
 
-def registrar_usuario(nombre: str, usuario: str, clave: str, rol: str) -> Tuple[bool, Optional[str]]:
+def registrar_usuario(nombre: str, apellido: str, usuario: str, clave: str, rol: str) -> Tuple[bool, Optional[str]]:
     """
     Registra un usuario nuevo.
     Devuelve (ok, mensaje_error).
@@ -39,10 +53,9 @@ def registrar_usuario(nombre: str, usuario: str, clave: str, rol: str) -> Tuple[
             cur.execute("SELECT COUNT(*) FROM usuarios WHERE usuario = ?", (usuario,))
             if cur.fetchone()[0] > 0:
                 return False, "El nombre de usuario ya existe"
-            clave_encriptada = _encriptar_clave(clave)
             cur.execute(
-                "INSERT INTO usuarios (nombre, usuario, clave, rol) VALUES (?, ?, ?, ?)",
-                (nombre, usuario, clave_encriptada, rol)
+                "INSERT INTO usuarios (nombre, apellido, usuario, clave, rol) VALUES (?, ?, ?, ?, ?)",
+                (nombre, apellido, usuario, clave, rol)
             )
         return True, None
     except sqlite3.IntegrityError as e:
@@ -50,7 +63,7 @@ def registrar_usuario(nombre: str, usuario: str, clave: str, rol: str) -> Tuple[
     except Exception as e:
         return False, str(e)
 
-def actualizar_usuario(usuario_id: int, nombre: str, usuario: str, clave: Optional[str], rol: str) -> Tuple[bool, Optional[str]]:
+def actualizar_usuario(usuario_id: int, nombre: str, apellido: str, usuario: str, clave: Optional[str], rol: str) -> Tuple[bool, Optional[str]]:
     """
     Actualiza un usuario. Si `clave` es None o cadena vacía, no la modifica.
     Devuelve (ok, mensaje_error).
@@ -62,15 +75,14 @@ def actualizar_usuario(usuario_id: int, nombre: str, usuario: str, clave: Option
             if cur.fetchone()[0] > 0:
                 return False, "El nombre de usuario ya está en uso por otro usuario"
             if clave:
-                clave_encriptada = _encriptar_clave(clave)
                 cur.execute(
-                    "UPDATE usuarios SET nombre = ?, usuario = ?, clave = ?, rol = ? WHERE id = ?",
-                    (nombre, usuario, clave_encriptada, rol, usuario_id)
+                    "UPDATE usuarios SET nombre = ?, apellido = ?, usuario = ?, clave = ?, rol = ? WHERE id = ?",
+                    (nombre, apellido, usuario, clave, rol, usuario_id)
                 )
             else:
                 cur.execute(
-                    "UPDATE usuarios SET nombre = ?, usuario = ?, rol = ? WHERE id = ?",
-                    (nombre, usuario, rol, usuario_id)
+                    "UPDATE usuarios SET nombre = ?, apellido = ?, usuario = ?, rol = ? WHERE id = ?",
+                    (nombre, apellido, usuario, rol, usuario_id)
                 )
         return True, None
     except sqlite3.IntegrityError as e:

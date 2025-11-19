@@ -13,59 +13,38 @@ class MesaButton(QPushButton):
         self.estado = mesa_tuple[2]
         self.seccion_id = mesa_tuple[3] if len(mesa_tuple) > 3 else None
         self.seccion_nombre = mesa_tuple[4] if len(mesa_tuple) > 4 else None
-        self.setFixedSize(120, 100)  # ancho x alto en píxeles
+        self.setFixedSize(160, 100)  # ancho x alto en píxeles
 
 
-        self.setObjectName("mesaButton")  # coincide con el QSS
+        self.setObjectName("mesaButton")  
         self._setup_icon_and_style(QSize(48, 48))
         self._setup_text_and_accessibility()
 
     def _setup_icon_and_style(self, icon_size: QSize):
-        icon_map = {
-            "ocupada": resource_path("src","app","resources","icons", "ocupada.png"),
-            "reservada": resource_path("src","app","resources","icons", "reservada.png"),
-            "libre": resource_path("src","app","resources","icons", "libre.png")
-        }
-        icon_path = icon_map.get(self.estado, icon_map["libre"])
-        icon_applied = False
-
-        if os.path.exists(str(icon_path)):
-            pix = QPixmap(str(icon_path))
-            if not pix.isNull():
-                screen = QGuiApplication.primaryScreen()
-                dpr = screen.devicePixelRatio() if screen is not None else 1.0
-                target = QSize(int(icon_size.width() * dpr), int(icon_size.height() * dpr))
-                scaled = pix.scaled(target, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                displayed = scaled.scaled(icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                self.setIcon(QIcon(displayed))
-                self.setIconSize(displayed.size())
-                icon_applied = True
-
+        
+        # Estilo base
         base_style = """
             QPushButton#mesaButton {
                 font-weight: bold;
                 font-size: 12pt;
-                padding: 6px;
+                padding: 10px;
                 border-radius: 10px;
-                border: 2px solid #800020;
+                border: 3px solid #787878;
                 text-align: center;
                 color: #333333;
-                background-color: rgba(255, 255, 255, 0.95);
             }
             QPushButton#mesaButton:hover {
-                background-color: rgba(255, 255, 255, 0.98);
-                border: 2px solid #900028;
+                border: 3px solid #FFFFFF;
             }
         """
 
-        estado_style = ""
-        if not icon_applied:
-            if self.estado == "ocupada":
-                estado_style = "QPushButton#mesaButton { background-color: #ffdddd; }"
-            elif self.estado == "reservada":
-                estado_style = "QPushButton#mesaButton { background-color: #fff7dd; }"
-            else:
-                estado_style = "QPushButton#mesaButton { background-color: #ddffdd; }"
+        # Color según estado
+        if self.estado == "ocupado":
+            estado_style = "QPushButton#mesaButton { background-color: #990000; color: white; }"  # rojo
+        elif self.estado == "reservada":
+            estado_style = "QPushButton#mesaButton { background-color: #f1c40f; color: black; }"  # amarillo
+        else:  # libre
+            estado_style = "QPushButton#mesaButton { background-color: #007811; color: white; }"  # verde
 
         self.setStyleSheet(base_style + estado_style)
 
