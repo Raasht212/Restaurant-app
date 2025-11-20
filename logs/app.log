@@ -1,0 +1,379 @@
+2025-11-19 15:09:10,269 DEBUG src.app.db.init_db: Actualización omitida o ya aplicada: CREATE INDEX IF NOT EXISTS idx_orden_detalles_menu_item ON orden_detalles(menu_item_id);
+2025-11-19 17:54:59,735 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 229, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 17:56:05,078 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 229, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 17:59:40,615 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 229, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:02:29,692 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 229, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:16:05,184 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 243, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:16:11,017 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 243, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:23:31,879 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 243, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:35:43,570 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 243, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:49:57,130 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 243, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:50:57,018 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 243, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:51:36,369 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 243, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:52:28,996 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 243, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 18:53:50,834 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 243, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 19:10:41,315 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 19:12:19,834 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 19:19:42,210 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 19:23:36,695 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 19:28:59,171 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 19:45:46,290 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 19:52:38,127 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 19:52:42,084 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 19:59:11,460 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:15:00,937 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:25:55,192 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:27:03,890 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 244, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:13,400 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:29,477 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:41,336 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:42,808 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:43,965 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:47,218 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:49,119 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:49,620 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:50,244 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:50,672 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:41:54,619 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:42:03,480 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:42:07,903 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:42:15,690 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:42:18,954 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:42:31,881 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:44:32,005 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:44:34,829 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:45:09,037 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:49:07,065 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:49:12,104 ERROR src.app.views.orden.orden: Error buscando ordenes por cliente
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 602, in filtrar_ordenes_por_cliente
+    rows = orden_service_module.listar_ordenes_abiertas()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'listar_ordenes_abiertas'
+2025-11-19 20:49:12,185 ERROR src.app.views.orden.orden: Error buscando ordenes por cliente
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 602, in filtrar_ordenes_por_cliente
+    rows = orden_service_module.listar_ordenes_abiertas()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'listar_ordenes_abiertas'
+2025-11-19 20:49:12,896 ERROR src.app.views.orden.orden: Error buscando ordenes por cliente
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 602, in filtrar_ordenes_por_cliente
+    rows = orden_service_module.listar_ordenes_abiertas()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'listar_ordenes_abiertas'
+2025-11-19 20:49:31,448 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:50:06,850 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 274, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:52:37,978 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:52:59,981 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:53:11,299 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:58:05,511 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:58:08,286 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:58:12,936 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:58:18,933 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:58:58,503 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:59:01,006 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 20:59:05,093 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 21:05:26,379 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 21:05:44,487 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'
+2025-11-19 21:33:12,634 ERROR src.app.views.orden.orden: Error cargando productos legacy
+Traceback (most recent call last):
+  File "C:\Users\spart\OneDrive\Desktop\RestauranteBren\Restaurant-app\src\app\views\orden\orden.py", line 250, in cargar_todos_productos_cache
+    filas = orden_service_module.obtener_productos_disponibles()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'src.app.services.orden_service' has no attribute 'obtener_productos_disponibles'

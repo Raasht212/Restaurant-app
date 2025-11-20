@@ -11,6 +11,7 @@ from src.app.views.reportes.reportes_view import ReportesView
 from src.app.views.conversion.tasaview import TasaView
 from src.app.views.usuarios.usuarios_view import UsuariosView
 from src.app.views.dashboard.dashboard_view import DashboardView  # si tienes dashboard
+from src.app.views.menu.menu_view import MenuView
 
 class MainWindow(QMainWindow):
     def __init__(self, usuario):
@@ -31,6 +32,7 @@ class MainWindow(QMainWindow):
         # Instanciar vistas
         self.dashboard_view = DashboardView()
         self.mesas_view = MesasView()
+        self.menu_view = MenuView()
         self.inventario_view = InventarioView(es_admin=(self.usuario[2] == "admin"))
         self.reportes_view = ReportesView()
         self.tasa_view = TasaView()
@@ -39,6 +41,7 @@ class MainWindow(QMainWindow):
         # Añadir vistas al stacked
         self.stacked_widget.addWidget(self.dashboard_view)   # index 0
         self.stacked_widget.addWidget(self.mesas_view)       # index 1
+        self.stacked_widget.addWidget(self.menu_view)        # index 6
         self.stacked_widget.addWidget(self.inventario_view)  # index 2
         self.stacked_widget.addWidget(self.reportes_view)    # index 3
         self.stacked_widget.addWidget(self.tasa_view)        # index 4
@@ -47,6 +50,7 @@ class MainWindow(QMainWindow):
         # Conectar botones del sidebar
         self.ui.pushButton.clicked.connect(self.mostrar_dashboard)
         self.ui.pushButton_3.clicked.connect(self.mostrar_mesas)
+        self.ui.pushButton_8.clicked.connect(self.mostrar_menu)
         self.ui.pushButton_4.clicked.connect(self.mostrar_inventario)
         self.ui.pushButton_5.clicked.connect(self.mostrar_reportes)
         self.ui.pushButton_6.clicked.connect(self.mostrar_tasa)
@@ -94,6 +98,13 @@ class MainWindow(QMainWindow):
         self.ui.label_2.setText("Usuarios")
         if hasattr(self.usuarios_view, "cargar_usuarios"):
             try: self.usuarios_view.cargar_usuarios()
+            except Exception: pass
+
+    def mostrar_menu(self):
+        self.stacked_widget.setCurrentWidget(self.menu_view)
+        self.ui.label_2.setText("Menú")
+        if hasattr(self.menu_view, "cargar_items"):
+            try: self.menu_view.cargar_items()
             except Exception: pass
 
     def cerrar_sesion(self):

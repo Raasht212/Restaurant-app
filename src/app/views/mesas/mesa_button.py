@@ -1,8 +1,5 @@
-import os
 from PySide6.QtWidgets import QPushButton
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon, QPixmap, QGuiApplication
-from ...config import resource_path
+from PySide6.QtCore import QSize
 
 class MesaButton(QPushButton):
     def __init__(self, mesa_tuple, parent=None):
@@ -17,10 +14,10 @@ class MesaButton(QPushButton):
 
 
         self.setObjectName("mesaButton")  
-        self._setup_icon_and_style(QSize(48, 48))
+        self._setup_style()
         self._setup_text_and_accessibility()
 
-    def _setup_icon_and_style(self, icon_size: QSize):
+    def _setup_style(self):
         
         # Estilo base
         base_style = """

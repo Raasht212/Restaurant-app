@@ -49,6 +49,8 @@ class Ui_MainWindow(object):
 "	color: white;\n"
 "	border:none;\n"
 "	border-radius:8px;\n"
+"   text-align: left;\n"
+"   margin-left: 10px;\n"
 "	padding: 10px 10px ;\n"
 "	font-size: 16px;\n"
 "	\n"
@@ -92,6 +94,16 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.pushButton_3)
 
+        self.pushButton_8 = QPushButton(self.sidebar)
+        self.pushButton_8.setObjectName(u"pushButton_8")
+        self.pushButton_8.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.pushButton_8.setStyleSheet(u"")
+        icon55 = QIcon()
+        icon55.addFile(u"src/app/resources/icons/pizza.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.pushButton_8.setIcon(icon55)
+
+        self.verticalLayout_2.addWidget(self.pushButton_8)
+
         self.pushButton_4 = QPushButton(self.sidebar)
         self.pushButton_4.setObjectName(u"pushButton_4")
         self.pushButton_4.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
@@ -132,6 +144,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.pushButton_7)
 
+
         self.verticalSpacer_3 = QSpacerItem(20, 115, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_2.addItem(self.verticalSpacer_3)
@@ -152,7 +165,7 @@ class Ui_MainWindow(object):
         self.main = QFrame(self.centralwidget)
         self.main.setObjectName(u"main")
         self.main.setStyleSheet(u"QFrame {\n"
-"	background-color: rgb(12, 12, 12);\n"
+"	background-color: #181818;\n"
 "}")
         self.main.setFrameShape(QFrame.StyledPanel)
         self.main.setFrameShadow(QFrame.Raised)
@@ -171,6 +184,7 @@ class Ui_MainWindow(object):
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Mesas", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Dashboard", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Mesas", None))
+        self.pushButton_8.setText(QCoreApplication.translate("MainWindow", u"Men\u00fa", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"Inventario", None))
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"Reportes", None))
         self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"Tasa del Dia", None))

@@ -5,8 +5,7 @@
 }
 
 /* Contenedores / paneles */
-QFrame, QGroupBox, QTableWidget, QDialog {
-
+ QGroupBox, QTableWidget, QDialog {
     background-color: #1d1d1d; /* fondo oscuro */
     border: 1px solid #444444;
 }
@@ -29,17 +28,30 @@ QPushButton:pressed {
 /* Tablas */
 QTableWidget {
     background-color: #2b2b2b;
-    gridline-color: #444444;
-    alternate-background-color: #333333;
+    gridline-color: #b4b4b4;
+
+    selection-background-color: #5a2b2b;
+    selection-color: #ffffff;
+
+    alternate-background-color: #6b001a;
     color: #ffffff;
 }
 QHeaderView::section {
-    background-color: #444444;
+    background-color: #6b001a;
     color: #ffffff;
-    font-weight: bold;
     padding: 6px;
     border: none;
 }
+
+QTableWidget::item {
+        background-color: transparent;      /* dejar que QTableWidget determine el fondo */
+        padding: 6px;
+    }
+
+QTableCornerButton::section {
+    background-color: #6b001a;          /* esquina superior izquierda (entre encabezados) */
+}
+
 
 /* Entradas */
 QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {
