@@ -63,7 +63,7 @@ class MesasView(QWidget):
         # Right: sidebar (fixed width) with controls and buscadores
         sidebar = QWidget()
         sidebar.setObjectName("sidebar")
-        sidebar.setFixedWidth(360)
+        sidebar.setFixedWidth(240)
         sb_layout = QVBoxLayout(sidebar)
         sb_layout.setContentsMargins(8, 8, 8, 8)
         sb_layout.setSpacing(10)
@@ -143,6 +143,38 @@ class MesasView(QWidget):
         sb_layout.addWidget(lbl_info)
 
         root.addWidget(sidebar, stretch=0)
+
+        stylesheet = """
+        QComboBox {
+            background-color: #1b1b1f;       /* fondo de la caja */
+            color: #e8e8e8;                 /* texto */
+            border: 1px solid #333;         /* borde */
+            padding: 6px 10px;
+            border-radius: 6px;
+            outline: none;
+        }
+        QComboBox::drop-down {
+            subcontrol-origin: padding;
+            subcontrol-position: right center;
+            width: 24px;
+            border-left: 1px solid #333;
+        }
+        QComboBox QAbstractItemView {       /* estilo del listado desplegable */
+            background-color: #15151a;     /* fondo del popup */
+            color: #e8e8e8;                /* color de texto de los items */
+            selection-background-color: #2b2b31;
+            selection-color: #ffffff;
+            outline: none;
+        }
+        QComboBox::item {                   /* estilos (según plataforma) */
+            height: 28px;
+            padding: 4px 8px;
+        }
+        """
+        self.combo_ordenes.setStyleSheet(stylesheet)
+        
+
+
 
     # -------------------------
     # Carga y filtro
@@ -254,25 +286,43 @@ class MesasView(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"No se pudo abrir orden: {e}")
 
-    def filtrar_ordenes_por_cliente(self, text: str):
-        t = (text or "").strip().lower()
+    def filtrar_ordenes_por_cliente(self, texto: str):
+        """
+        Buscar órdenes abiertas por nombre de cliente.
+        Recarga la lista de órdenes antes de buscar para evitar desincronía con la cache.
+        Si encuentra coincidencia abre la primera orden encontrada.
+        """
+        t = (texto or "").strip().lower()
         if not t:
             return
-        for oid, mesa_id, cliente, total, fecha in self._all_ordenes_cache:
-            if t in (cliente or "").lower():
+
+        # recargar cache de órdenes abiertas
+        try:
+            rows = orden_service_module.listar_ordenes_abiertas()
+        except Exception:
+            rows = []
+
+        # normalizar y buscar substring en el campo cliente
+        for oid, mesa_id, cliente, total, fecha in rows:
+            cliente_norm = (cliente or "").strip().lower()
+            if t in cliente_norm:
                 try:
                     orden = orden_service_module.obtener_orden_por_id(oid)
                     if orden:
-                        dialog = OrdenDialog(obtener_mesa_por_id(orden.get("mesa_id")) if orden.get("mesa_id") else (None, "Sin mesa", "libre"), parent=self)
+                        mesa_id_orden = orden.get("mesa_id")
+                        mesa = obtener_mesa_por_id(mesa_id_orden) if mesa_id_orden else (None, "Sin mesa", "libre")
+                        dialog = OrdenDialog(mesa, parent=self)
                         try:
                             dialog.cargar_orden_por_id(oid)
                         except Exception:
                             pass
                         dialog.exec()
+                        # actualizar vistas y caches después de cerrar
                         self.actualizar_mesas()
                         return
                 except Exception:
-                    pass
+                    # si algo falla con una orden particular, continuar buscando otras coincidencias
+                    continue
 
     def on_orden_seleccionada(self, idx: int):
         orden_id = self.combo_ordenes.currentData()

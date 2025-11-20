@@ -57,7 +57,7 @@ def inicializar_base_datos() -> bool:
             FOREIGN KEY (mesa_id) REFERENCES mesas (id)
         )""",
 
-        # Detalles de orden (compatible con productos y menu_items)
+
         """CREATE TABLE IF NOT EXISTS orden_detalles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             orden_id INTEGER NOT NULL,

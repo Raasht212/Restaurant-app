@@ -308,3 +308,21 @@ def insertar_factura(
         return False, f"Integridad DB: {e}"
     except Exception as e:
         return False, str(e)
+    
+def listar_ordenes_abiertas(estado: str = "abierta"):
+    with ConnectionManager() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, mesa_id, cliente_nombre, total, fecha FROM ordenes WHERE estado = ? ORDER BY fecha DESC",
+            (estado,)
+        )
+        return [(int(r[0]), int(r[1]) if r[1] is not None else None, r[2] or "", float(r[3] or 0.0), r[4]) for r in cur.fetchall()]
+
+def obtener_orden_por_id(orden_id: int):
+    with ConnectionManager() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT id, mesa_id, cliente_nombre, total, estado, fecha FROM ordenes WHERE id = ?", (orden_id,))
+        r = cur.fetchone()
+        if not r:
+            return None
+        return {"id": int(r[0]), "mesa_id": int(r[1]) if r[1] is not None else None, "cliente": r[2] or "", "total": float(r[3] or 0.0), "estado": r[4], "fecha": r[5]}
