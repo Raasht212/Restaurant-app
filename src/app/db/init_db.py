@@ -11,7 +11,7 @@ def inicializar_base_datos() -> bool:
     Devuelve True si la inicialización se completó (o ya estaba aplicada).
     """
     comandos = [
-        # Usuarios
+        
         """CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
@@ -21,13 +21,13 @@ def inicializar_base_datos() -> bool:
             rol TEXT NOT NULL
         )""",
 
-        # Secciones (para mesas)
+        
         """CREATE TABLE IF NOT EXISTS secciones (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT UNIQUE NOT NULL
         )""",
 
-        # Mesas
+        
         """CREATE TABLE IF NOT EXISTS mesas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             numero INTEGER UNIQUE NOT NULL,
@@ -36,15 +36,7 @@ def inicializar_base_datos() -> bool:
             FOREIGN KEY (seccion_id) REFERENCES secciones (id)
         )""",
 
-        # Productos legacy (opcional, por compatibilidad)
-        """CREATE TABLE IF NOT EXISTS productos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT UNIQUE NOT NULL,
-            precio REAL NOT NULL,
-            stock INTEGER NOT NULL
-        )""",
-
-        # Órdenes
+        
         """CREATE TABLE IF NOT EXISTS ordenes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             mesa_id INTEGER NOT NULL,
@@ -61,20 +53,16 @@ def inicializar_base_datos() -> bool:
         """CREATE TABLE IF NOT EXISTS orden_detalles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             orden_id INTEGER NOT NULL,
-            producto_id INTEGER DEFAULT NULL,      -- compatibilidad con tabla productos
             menu_item_id INTEGER DEFAULT NULL,     -- referencia a menu_items (si aplica)
             variant_id INTEGER DEFAULT NULL,       -- referencia a variante (si se usa)
             cantidad INTEGER NOT NULL,
             precio REAL NOT NULL,                  -- campo legacy: precio aplicado (mantener compatibilidad)
             precio_unitario REAL DEFAULT NULL,     -- precio unitario explícito (más claro)
             subtotal REAL NOT NULL,
-            fuente TEXT DEFAULT 'producto',        -- 'producto' o 'menu' para depuración
             FOREIGN KEY (orden_id) REFERENCES ordenes (id)
-            -- NOTA: no se crean FKs hacia productos/menu_items para facilitar migraciones;
-            -- se pueden añadir recreando la tabla con las constraints si se desea.
         )""",
 
-        # Facturas
+        
         """CREATE TABLE IF NOT EXISTS facturas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             orden_id INTEGER NOT NULL,
@@ -85,14 +73,14 @@ def inicializar_base_datos() -> bool:
             FOREIGN KEY (orden_id) REFERENCES ordenes (id)
         )""",
 
-        # Tasas de cambio
+        
         """CREATE TABLE IF NOT EXISTS tasas_cambio (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             fecha DATE NOT NULL UNIQUE,
             tasa REAL NOT NULL
         )""",
 
-        # Menú: secciones y items
+        
         """CREATE TABLE IF NOT EXISTS menu_sections (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL UNIQUE,
@@ -113,7 +101,7 @@ def inicializar_base_datos() -> bool:
             FOREIGN KEY (section_id) REFERENCES menu_sections(id) ON DELETE RESTRICT
         )""",
 
-        # Variantes / tamaños por item (opcional; dejar para futuras mejoras)
+        
         """CREATE TABLE IF NOT EXISTS menu_item_variant (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             menu_item_id INTEGER NOT NULL,
@@ -125,7 +113,15 @@ def inicializar_base_datos() -> bool:
             active INTEGER NOT NULL DEFAULT 1,
             UNIQUE(menu_item_id, clave),
             FOREIGN KEY (menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE
-        )"""
+        )""",
+
+        """CREATE TABLE IF NOT EXISTS productos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            descripcion TEXT DEFAULT NULL,
+            stock INTEGER NOT NULL DEFAULT 0,
+            precio REAL NOT NULL DEFAULT 0.0
+            )""",
     ]
 
     actualizaciones = [
@@ -221,12 +217,52 @@ def inicializar_base_datos() -> bool:
                 row = cur.fetchone()
                 pizzas_section = row[0] if row else None
 
+                cur.execute("SELECT id FROM menu_sections WHERE nombre = ?", ("Bebidas",))
+                row = cur.fetchone()
+                bebidas_section = row[0] if row else None
+
+                cur.execute("SELECT id FROM menu_sections WHERE nombre = ?", ("Postres",))
+                row = cur.fetchone()
+                postres_section = row[0] if row else None
+
                 # Insertar items ejemplo (si no existen)
                 if pizzas_section:
                     cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
                                 (pizzas_section, "Margarita", "Queso, salsa y albahaca", 8.50, 1, 0))
                     cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
                                 (pizzas_section, "Pepperoni", "Pepperoni extra", 9.50, 1, 1))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (pizzas_section, "Cuatro Quesos", "Mozzarella, gorgonzola, parmesano y provolone", 10.50, 1, 2))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (pizzas_section, "Hawaiana", "Jamón y piña", 9.00, 1, 3))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (pizzas_section, "Vegetariana", "Verduras frescas de temporada", 9.50, 1, 4))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (pizzas_section, "Carnívora", "Carne molida, pepperoni, jamón y salchicha", 11.00, 1, 5))
+
+                if bebidas_section:
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (bebidas_section, "Coca-Cola", "Bebida gaseosa 350ml", 1.50, 1, 0))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (bebidas_section, "Agua Mineral", "Botella 500ml", 1.00, 1, 1))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (bebidas_section, "Jugo Natural", "Jugo de frutas frescas", 2.50, 1, 2))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (bebidas_section, "Cerveza", "Botella 330ml", 2.00, 1, 3))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (bebidas_section, "Vino Tinto", "Copa de vino tinto", 3.50, 1, 4))
+
+                if postres_section:
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (postres_section, "Tiramisú", "Clásico italiano con café y mascarpone", 4.50, 1, 0))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (postres_section, "Helado", "Tres bolas de helado a elección", 3.00, 1, 1))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (postres_section, "Cheesecake", "Tarta de queso con frutos rojos", 4.00, 1, 2))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (postres_section, "Brownie", "Brownie de chocolate con nueces", 3.50, 1, 3))
+                    cur.execute("INSERT OR IGNORE INTO menu_items (section_id, nombre, descripcion, precio, disponible, position) VALUES (?, ?, ?, ?, ?, ?)",
+                                (postres_section, "Panna Cotta", "Postre italiano con crema y frutas", 4.00, 1, 4))
 
                 conn.commit()
         except Error:

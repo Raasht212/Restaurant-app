@@ -26,24 +26,22 @@ def obtener_orden_abierta_por_mesa(mesa_id: int) -> Optional[Tuple[int, Optional
 
 def obtener_detalles_orden(orden_id: int) -> List[Tuple]:
     """
-    Devuelve los detalles de la orden haciendo JOIN tanto a menu_items como a productos.
-    Cada fila: (detalle_id, item_id, nombre, cantidad, precio_unitario, subtotal, variant_id, fuente)
+    Devuelve los detalles de la orden haciendo JOIN a menu_items.
+    Cada fila: (detalle_id, item_id, nombre, cantidad, precio_unitario, subtotal, variant_id)
     """
     with ConnectionManager() as conn:
         cur = conn.cursor()
         cur.execute("""
             SELECT
                 d.id,
-                COALESCE(d.menu_item_id, d.producto_id) AS item_id,
-                COALESCE(mi.nombre, p.nombre) AS nombre,
+                d.menu_item_id AS item_id,
+                mi.nombre AS nombre,
                 d.cantidad,
                 COALESCE(d.precio_unitario, d.precio) AS precio_unitario,
                 d.subtotal,
-                d.variant_id,
-                d.fuente
+                d.variant_id
             FROM orden_detalles d
             LEFT JOIN menu_items mi ON mi.id = d.menu_item_id
-            LEFT JOIN productos p ON p.id = d.producto_id
             WHERE d.orden_id = ?
             ORDER BY d.id
         """, (orden_id,))
@@ -56,19 +54,15 @@ def obtener_detalles_orden(orden_id: int) -> List[Tuple]:
 def _now_iso() -> str:
     return datetime.datetime.now().isoformat(sep=' ', timespec='seconds')
 
-
 def _validar_y_calcular_detalles(cur, productos: List[Dict]) -> Tuple[bool, Optional[str], List[Dict], float]:
     """
     Normaliza y valida la lista de productos recibidos.
-    Cada dict entrante puede ser:
-      - {"producto_id": X, "cantidad": N, "subtotal": optional}
+    Cada dict entrante debe ser:
       - {"menu_item_id": X, "variant_id": optional, "cantidad": N, "subtotal": optional}
     Retorna: (ok, msg_error, detalles_normalizados, total)
-    detalle normalizado ejemplo para menu:
+    detalle normalizado ejemplo:
       {"menu_item_id": int, "variant_id": Optional[int], "cantidad": int,
        "precio_unitario": float, "subtotal": float, "fuente": "menu"}
-    detalle normalizado ejemplo para producto:
-      {"producto_id": int, "cantidad": int, "precio_unitario": float, "subtotal": float, "fuente": "producto"}
     """
     detalles = []
     total = 0.0
@@ -83,76 +77,44 @@ def _validar_y_calcular_detalles(cur, productos: List[Dict]) -> Tuple[bool, Opti
             return False, f"Cantidad inválida para línea: {p}", [], 0.0
 
         menu_item_id = p.get("menu_item_id")
-        producto_id = p.get("producto_id")
         variant_id = p.get("variant_id")
 
-        if menu_item_id is not None:
-            # obtener precio base del item de menú
-            cur.execute("SELECT precio FROM menu_items WHERE id = ?", (int(menu_item_id),))
-            row = cur.fetchone()
-            if not row:
-                return False, f"Item de menú no existe (id={menu_item_id})", [], 0.0
-            precio = float(row[0])
+        if menu_item_id is None:
+            return False, f"Detalle sin menu_item_id válido: {p}", [], 0.0
 
-            # si viene variante, preferir precio de variante
-            if variant_id is not None:
-                cur.execute("SELECT precio FROM menu_item_variant WHERE id = ?", (int(variant_id),))
-                vr = cur.fetchone()
-                if not vr:
-                    return False, f"Variante no existe (id={variant_id})", [], 0.0
-                precio = float(vr[0])
+        # obtener precio base del item de menú
+        cur.execute("SELECT precio FROM menu_items WHERE id = ?", (int(menu_item_id),))
+        row = cur.fetchone()
+        if not row:
+            return False, f"Item de menú no existe (id={menu_item_id})", [], 0.0
+        precio = float(row[0])
 
-            subtotal = p.get("subtotal")
-            if subtotal in (None, ""):
-                subtotal = round(precio * cantidad, 2)
-            else:
-                try:
-                    subtotal = round(float(subtotal), 2)
-                except Exception:
-                    return False, f"Subtotal inválido en línea: {p}", [], 0.0
+        # si viene variante, preferir precio de variante
+        if variant_id is not None:
+            cur.execute("SELECT precio FROM menu_item_variant WHERE id = ?", (int(variant_id),))
+            vr = cur.fetchone()
+            if not vr:
+                return False, f"Variante no existe (id={variant_id})", [], 0.0
+            precio = float(vr[0])
 
-            detalles.append({
-                "menu_item_id": int(menu_item_id),
-                "variant_id": int(variant_id) if variant_id is not None else None,
-                "cantidad": cantidad,
-                "precio_unitario": precio,
-                "subtotal": subtotal,
-                "fuente": "menu"
-            })
-            total += subtotal
-
-        elif producto_id is not None:
-            # legacy: tabla productos (valida stock si aplica)
-            pid = int(producto_id)
-            cur.execute("SELECT precio, stock FROM productos WHERE id = ?", (pid,))
-            row = cur.fetchone()
-            if not row:
-                return False, f"Producto no existe (id={pid})", [], 0.0
-            precio = float(row[0])
-            stock = row[1] if len(row) > 1 else None
-            if stock is not None and cantidad > int(stock):
-                return False, f"Stock insuficiente para producto id={pid} (solicitado={cantidad}, disponible={stock})", [], 0.0
-
-            subtotal = p.get("subtotal")
-            if subtotal in (None, ""):
-                subtotal = round(precio * cantidad, 2)
-            else:
-                try:
-                    subtotal = round(float(subtotal), 2)
-                except Exception:
-                    return False, f"Subtotal inválido en línea: {p}", [], 0.0
-
-            detalles.append({
-                "producto_id": pid,
-                "cantidad": cantidad,
-                "precio_unitario": precio,
-                "subtotal": subtotal,
-                "fuente": "producto"
-            })
-            total += subtotal
-
+        subtotal = p.get("subtotal")
+        if subtotal in (None, ""):
+            subtotal = round(precio * cantidad, 2)
         else:
-            return False, f"Detalle sin identificador válido (menu_item_id o producto_id): {p}", [], 0.0
+            try:
+                subtotal = round(float(subtotal), 2)
+            except Exception:
+                return False, f"Subtotal inválido en línea: {p}", [], 0.0
+
+        detalles.append({
+            "menu_item_id": int(menu_item_id),
+            "variant_id": int(variant_id) if variant_id is not None else None,
+            "cantidad": cantidad,
+            "precio_unitario": precio,
+            "subtotal": subtotal,
+            "fuente": "menu"
+        })
+        total += subtotal
 
     return True, None, detalles, round(total, 2)
 
@@ -161,7 +123,7 @@ def _validar_y_calcular_detalles(cur, productos: List[Dict]) -> Tuple[bool, Opti
 # Crear / Actualizar órdenes
 # --------------------------
 def crear_o_actualizar_orden(
-    mesa_id: int,
+    mesa_id: Optional[int],
     cliente_nombre: str,
     productos: List[Dict],
     orden_id: Optional[int] = None
@@ -174,7 +136,6 @@ def crear_o_actualizar_orden(
     try:
         with ConnectionManager() as conn:
             cur = conn.cursor()
-
             ahora = _now_iso()
 
             # Validar y normalizar líneas
@@ -197,40 +158,25 @@ def crear_o_actualizar_orden(
                     (mesa_id, cliente_nombre, float(total), ahora)
                 )
                 nuevo_id = cur.lastrowid
-                # marcar mesa ocupada
-                cur.execute("UPDATE mesas SET estado = 'ocupado' WHERE id = ?", (mesa_id,))
+                # marcar mesa ocupada si aplica
+                if mesa_id is not None:
+                    cur.execute("UPDATE mesas SET estado = 'ocupado' WHERE id = ?", (mesa_id,))
 
-            # Insertar detalles normalizados
+            # Insertar detalles normalizados (solo fuente 'menu')
             for d in detalles_norm:
-                if d["fuente"] == "menu":
-                    cur.execute("""
-                        INSERT INTO orden_detalles
-                        (orden_id, producto_id, menu_item_id, variant_id, cantidad, precio, precio_unitario, subtotal, fuente)
-                        VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?)
-                    """, (
-                        nuevo_id,
-                        d["menu_item_id"],
-                        d["variant_id"],
-                        d["cantidad"],
-                        d["precio_unitario"],   # mantener 'precio' legacy
-                        d["precio_unitario"],
-                        d["subtotal"],
-                        "menu"
-                    ))
-                else:
-                    cur.execute("""
-                        INSERT INTO orden_detalles
-                        (orden_id, producto_id, menu_item_id, variant_id, cantidad, precio, precio_unitario, subtotal, fuente)
-                        VALUES (?, ?, NULL, NULL, ?, ?, ?, ?, ?)
-                    """, (
-                        nuevo_id,
-                        d["producto_id"],
-                        d["cantidad"],
-                        d["precio_unitario"],
-                        d["precio_unitario"],
-                        d["subtotal"],
-                        "producto"
-                    ))
+                cur.execute("""
+                    INSERT INTO orden_detalles
+                    (orden_id, menu_item_id, variant_id, cantidad, precio, precio_unitario, subtotal)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    nuevo_id,
+                    d["menu_item_id"],
+                    d.get("variant_id"),
+                    d["cantidad"],
+                    d["precio_unitario"],   # mantener 'precio' legacy
+                    d["precio_unitario"],
+                    d["subtotal"]
+                ))
 
             conn.commit()
         return True, nuevo_id, None
@@ -261,12 +207,17 @@ def cancelar_orden(orden_id: int) -> Tuple[bool, Optional[str]]:
             cur.execute("DELETE FROM orden_detalles WHERE orden_id = ?", (orden_id,))
             cur.execute("DELETE FROM ordenes WHERE id = ?", (orden_id,))
 
-            # liberar mesa
-            cur.execute("UPDATE mesas SET estado = 'libre' WHERE id = ?", (mesa_id,))
+            # liberar mesa si aplica
+            if mesa_id is not None:
+                cur.execute("UPDATE mesas SET estado = 'libre' WHERE id = ?", (mesa_id,))
 
             conn.commit()
         return True, None
     except Exception as e:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
         return False, str(e)
 
 
@@ -296,19 +247,29 @@ def insertar_factura(
                 (ahora, orden_id)
             )
 
-            # liberar mesa (subconsulta segura)
-            cur.execute(
-                "UPDATE mesas SET estado = 'libre' WHERE id = (SELECT mesa_id FROM ordenes WHERE id = ?)",
-                (orden_id,)
-            )
+            # liberar mesa asociada si existe
+            cur.execute("SELECT mesa_id FROM ordenes WHERE id = ?", (orden_id,))
+            row = cur.fetchone()
+            mesa_id = row[0] if row else None
+            if mesa_id is not None:
+                cur.execute("UPDATE mesas SET estado = 'libre' WHERE id = ?", (mesa_id,))
 
             conn.commit()
         return True, None
     except sqlite3.IntegrityError as e:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
         return False, f"Integridad DB: {e}"
     except Exception as e:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
         return False, str(e)
-    
+
+
 def listar_ordenes_abiertas(estado: str = "abierta"):
     with ConnectionManager() as conn:
         cur = conn.cursor()
@@ -316,7 +277,11 @@ def listar_ordenes_abiertas(estado: str = "abierta"):
             "SELECT id, mesa_id, cliente_nombre, total, fecha FROM ordenes WHERE estado = ? ORDER BY fecha DESC",
             (estado,)
         )
-        return [(int(r[0]), int(r[1]) if r[1] is not None else None, r[2] or "", float(r[3] or 0.0), r[4]) for r in cur.fetchall()]
+        return [
+            (int(r[0]), int(r[1]) if r[1] is not None else None, r[2] or "", float(r[3] or 0.0), r[4])
+            for r in cur.fetchall()
+        ]
+
 
 def obtener_orden_por_id(orden_id: int):
     with ConnectionManager() as conn:
@@ -325,4 +290,11 @@ def obtener_orden_por_id(orden_id: int):
         r = cur.fetchone()
         if not r:
             return None
-        return {"id": int(r[0]), "mesa_id": int(r[1]) if r[1] is not None else None, "cliente": r[2] or "", "total": float(r[3] or 0.0), "estado": r[4], "fecha": r[5]}
+        return {
+            "id": int(r[0]),
+            "mesa_id": int(r[1]) if r[1] is not None else None,
+            "cliente": r[2] or "",
+            "total": float(r[3] or 0.0),
+            "estado": r[4],
+            "fecha": r[5]
+        }

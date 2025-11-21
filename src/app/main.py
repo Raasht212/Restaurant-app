@@ -1,6 +1,7 @@
 import sys
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPalette, QColor
+from PySide6.QtCore import QTranslator, QLibraryInfo
 
 from src.app.logging_config import configure_logging
 from src.app.db.init_db import inicializar_base_datos
@@ -15,6 +16,12 @@ def main():
 
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+
+    translator = QTranslator(app)
+    translator.load("qt_es", QLibraryInfo.path(QLibraryInfo.TranslationsPath))
+    app.installTranslator(translator)
+
+
 
     # Paleta básica
     palette = QPalette()

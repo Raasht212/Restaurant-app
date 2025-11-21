@@ -16,7 +16,6 @@ from PySide6.QtGui import QFont, QIcon, QColor, QBrush
 from ...services import orden_service as orden_service_module
 from ...services import menu_service
 from ...services import conversion_service
-from ...services import stock_service
 from ...controllers import orden_controller as orden_controller_module
 from .invoice_preview import InvoicePreviewDialog
 
@@ -167,12 +166,6 @@ class OrdenDialog(QDialog):
         splitter.setStretchFactor(0, 1)
         splitter.setStretchFactor(1, 2)
 
-
-
-
-
-
-
         main_layout.addWidget(splitter)
 
     # --------------------------
@@ -228,10 +221,9 @@ class OrdenDialog(QDialog):
     def cargar_todos_productos_cache(self):
         """
         Construye self._productos_list_cache: lista de dicts con keys:
-        {'fuente','id','nombre','descripcion','precio','stock'}
+        {'fuente','id','nombre','descripcion','precio','section_id'}
         """
         cache: List[Dict] = []
-        # menu items
         try:
             secciones = menu_service.listar_secciones(only_active=True)
             for s in secciones:
@@ -239,22 +231,15 @@ class OrdenDialog(QDialog):
                 for it in items:
                     # it: (id, section_id, nombre, descripcion, precio, disponible, position, created_at)
                     cache.append({
-                        "fuente": "menu", "id": int(it[0]), "nombre": it[2] or "",
-                        "descripcion": it[3] or "", "precio": float(it[4] or 0.0), "stock": None, "section_id": int(it[1])
+                        "fuente": "menu",
+                        "id": int(it[0]),
+                        "nombre": it[2] or "",
+                        "descripcion": it[3] or "",
+                        "precio": float(it[4] or 0.0),
+                        "section_id": int(it[1])
                     })
         except Exception:
             logger.exception("Error cargando menu_items")
-
-        # productos legacy
-        try:
-            filas = orden_service_module.obtener_productos_disponibles()
-            for row in filas:
-                cache.append({
-                    "fuente": "producto", "id": int(row[0]), "nombre": row[1],
-                    "descripcion": "", "precio": float(row[2]), "stock": int(row[3]) if row[3] is not None else None, "section_id": None
-                })
-        except Exception:
-            logger.exception("Error cargando productos legacy")
 
         self._productos_list_cache = cache
         # construir map rápido (fuente,id) -> info
@@ -311,7 +296,6 @@ class OrdenDialog(QDialog):
         if row < 0 or row >= len(getattr(self, "_productos_visible", [])):
             return
         prod = self._productos_visible[row]
-        # añadimos usando la misma lógica que agregar_producto: construir línea con fuente/id
         self._agregar_linea_de_producto(prod, cantidad=self.spin_cantidad.value())
 
     def agregar_producto_desde_lista(self):
@@ -323,33 +307,24 @@ class OrdenDialog(QDialog):
         self._agregar_linea_de_producto(prod, cantidad=self.spin_cantidad.value())
 
     def _agregar_linea_de_producto(self, prod: Dict, cantidad: int = 1):
-        fuente = prod["fuente"]
         pid = int(prod["id"])
         nombre = prod["nombre"]
         precio = float(prod["precio"])
 
-        # validar stock solo para 'producto'
-        if fuente == "producto":
-            stock = stock_service.consultar_stock(pid)
-            if stock is None:
-                QMessageBox.warning(self, "Error", "No se pudo consultar stock")
-                return
-            # sumar con cantidades ya en orden y con detalles_originales
-            existente = next((p for p in self.productos_seleccionados if p["fuente"]=="producto" and int(p["id"])==pid), None)
-            cantidad_en_orden = existente["cantidad"] if existente else 0
-            if pid in self.detalles_originales:
-                cantidad_en_orden += int(self.detalles_originales[pid].get("cantidad_actual", self.detalles_originales[pid].get("cantidad_original", 0)))
-            if cantidad + cantidad_en_orden > stock:
-                QMessageBox.warning(self, "Stock insuficiente", f"No hay suficiente stock de {nombre}\nDisponible: {stock}")
-                return
-
         # sumar o crear línea
-        existente = next((p for p in self.productos_seleccionados if p["fuente"]==fuente and int(p["id"])==pid), None)
+        existente = next((p for p in self.productos_seleccionados if int(p["id"]) == pid), None)
         if existente:
-            existente["cantidad"] = int(existente.get("cantidad",0)) + int(cantidad)
+            existente["cantidad"] = int(existente.get("cantidad", 0)) + int(cantidad)
             existente["subtotal"] = round(float(existente["precio"]) * existente["cantidad"], 2)
         else:
-            line = {"fuente": fuente, "id": pid, "nombre": nombre, "descripcion": prod.get("descripcion",""), "precio": precio, "cantidad": int(cantidad), "subtotal": round(precio * cantidad, 2)}
+            line = {
+                "id": pid,
+                "nombre": nombre,
+                "descripcion": prod.get("descripcion", ""),
+                "precio": precio,
+                "cantidad": int(cantidad),
+                "subtotal": round(precio * cantidad, 2)
+            }
             self.productos_seleccionados.append(line)
 
         self.actualizar_tabla_productos()
@@ -369,7 +344,7 @@ class OrdenDialog(QDialog):
             self.tabla_productos.setItem(r, 3, QTableWidgetItem(f"${float(p['subtotal']):.2f}"))
 
             btn = QPushButton("Eliminar")
-            btn.setStyleSheet("background-color:#e74c3c;color:white;border:none;padding:0px 0px;border-radius:4px;")
+            btn.setStyleSheet("background-color:#e74c3c;color:white;border:none;padding:0px;border-radius:4px;")
             pid = p["id"]
             btn.clicked.connect(lambda _, prod_id=pid: self.eliminar_producto_por_id(prod_id))
             self.tabla_productos.setCellWidget(r, 4, btn)
@@ -383,7 +358,7 @@ class OrdenDialog(QDialog):
         except Exception:
             tasa = None
         if tasa:
-            self.label_total_bolivares.setText(f"{round(total * tasa,2):.2f} VES (T: {tasa:.2f})")
+            self.label_total_bolivares.setText(f"{round(total * tasa, 2):.2f} VES (T: {tasa:.2f})")
         else:
             self.label_total_bolivares.setText(" - VES")
 
@@ -394,10 +369,6 @@ class OrdenDialog(QDialog):
             self.actualizar_tabla_productos()
             self._marcar_orden_modificada_por_ui()
 
-
-        #if self.orden_id:
-        #    self.btn_factura.setVisible(False); self.btn_cancelar.setVisible(False); self.btn_confirmar.setVisible(True)
-
     def tabla_mouse_double_click(self, row: int, col: int):
         if row < 0 or row >= len(self.productos_seleccionados):
             return
@@ -405,16 +376,21 @@ class OrdenDialog(QDialog):
             self.eliminar_producto_por_id(self.productos_seleccionados[row]["id"])
             return
         current = self.productos_seleccionados[row]
-        cantidad, ok = QInputDialog.getInt(self, "Editar cantidad", f"Cantidad para {current['nombre']}:", current["cantidad"], 1, 1000, 1)
+        cantidad, ok = QInputDialog.getInt(
+            self,
+            "Editar cantidad",
+            f"Cantidad para {current['nombre']}:",
+            current["cantidad"],
+            1,
+            1000,
+            1
+        )
         if ok:
             current["cantidad"] = cantidad
             current["subtotal"] = round(current["precio"] * cantidad, 2)
             self.actualizar_tabla_productos()
             self._marcar_orden_modificada_por_ui()
 
-
-            #if self.orden_id:
-            #    self.btn_factura.setVisible(False); self.btn_cancelar.setVisible(False); self.btn_confirmar.setVisible(True)
 
     # --------------------------
     # Cargar/guardar orden y acciones (usa controller/service)
@@ -425,13 +401,22 @@ class OrdenDialog(QDialog):
         detalles = orden_service_module.obtener_detalles_orden(self.orden_id)
         self.detalles_originales = {}
         self.productos_seleccionados = []
-        # detalles: (detalle_id, item_id, nombre, cantidad, precio_unitario, subtotal, variant_id, fuente)
+        # detalles: (detalle_id, item_id, nombre, cantidad, precio_unitario, subtotal, variant_id)
         for d in detalles:
-            detalle_id = d[0]; item_id = d[1]; nombre = d[2]; cantidad = int(d[3]); precio_unitario = float(d[4] or 0.0); subtotal = float(d[5] or round(precio_unitario*cantidad,2)); fuente = d[7] or "producto"
-            entry = {"fuente": fuente, "id": int(item_id), "nombre": nombre, "precio": precio_unitario, "cantidad": cantidad, "subtotal": subtotal, "detalle_id": detalle_id}
+            detalle_id, item_id, nombre, cantidad, precio_unitario, subtotal, variant_id = d
+            cantidad = int(cantidad)
+            precio_unitario = float(precio_unitario or 0.0)
+            subtotal = float(subtotal or round(precio_unitario * cantidad, 2))
+            entry = {
+                "id": int(item_id),
+                "nombre": nombre,
+                "precio": precio_unitario,
+                "cantidad": cantidad,
+                "subtotal": subtotal,
+                "detalle_id": detalle_id,
+                "variant_id": variant_id
+            }
             self.productos_seleccionados.append(entry)
-            if fuente == "producto":
-                self.detalles_originales[int(item_id)] = {"cantidad_original": cantidad, "cantidad_actual": cantidad}
         self.actualizar_tabla_productos()
 
     def _calcular_total(self) -> float:
@@ -450,15 +435,21 @@ class OrdenDialog(QDialog):
 
         productos_payload = []
         for p in self.productos_seleccionados:
-            entry = {"cantidad": int(p["cantidad"])}
-            if p["fuente"] == "menu":
-                entry["menu_item_id"] = int(p["id"])
-            else:
-                entry["producto_id"] = int(p["id"])
-            entry["subtotal"] = float(p["subtotal"])
+            entry = {
+                "cantidad": int(p["cantidad"]),
+                "menu_item_id": int(p["id"]),
+                "subtotal": float(p["subtotal"])
+            }
+            if "variant_id" in p and p["variant_id"]:
+                entry["variant_id"] = int(p["variant_id"])
             productos_payload.append(entry)
 
-        ok, nuevo_id, err = orden_controller_module.confirmar_orden_flow(self.mesa[0], nombre_cliente, productos_payload, self.detalles_originales, orden_id=self.orden_id)
+        ok, nuevo_id, err = orden_controller_module.confirmar_orden_flow(
+            self.mesa[0],
+            nombre_cliente,
+            productos_payload,
+            orden_id=self.orden_id
+        )
         if not ok:
             QMessageBox.critical(self, "Error", err or "No se pudo confirmar orden")
             return
@@ -466,7 +457,7 @@ class OrdenDialog(QDialog):
         self.orden_id = nuevo_id
         QMessageBox.information(self, "Éxito", "Orden guardada")
         # actualizar originales (solo productos físicos relevantes)
-        self.detalles_originales = {p["id"]: {"cantidad_original": int(p["cantidad"]), "cantidad_actual": int(p["cantidad"])} for p in self.productos_seleccionados if p["fuente"]=="producto"}
+        self.detalles_originales = {}
         self.btn_confirmar.setVisible(False); self.btn_factura.setVisible(True); self.btn_cancelar.setVisible(True)
         try:
             self.estado_mesa_cambiado.emit()
@@ -516,7 +507,13 @@ class OrdenDialog(QDialog):
                 pass
 
     def cancelar_orden(self):
-        reply = QMessageBox.question(self, "Confirmar cancelación", "¿Cancelar la orden y devolver stock?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        reply = QMessageBox.question(
+            self,
+            "Confirmar cancelación",
+            "¿Cancelar la orden?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
         if reply != QMessageBox.Yes:
             return
         if self.orden_id:
