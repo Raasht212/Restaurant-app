@@ -10,6 +10,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QHeaderView,
     QLabel, QSizePolicy, QSpacerItem, QTableWidget,
     QTableWidgetItem, QVBoxLayout, QWidget)
+import datetime
+
+fecha_actual = datetime.datetime.now()
 
 class Ui_Dashboard(object):
     def setupUi(self, Dashboard):
@@ -345,7 +348,7 @@ class Ui_Dashboard(object):
     def retranslateUi(self, Dashboard):
         Dashboard.setWindowTitle(QCoreApplication.translate("Dashboard", u"Form", None))
         self.label.setText(QCoreApplication.translate("Dashboard", u"Hola Jose", None))
-        self.label_5.setText(QCoreApplication.translate("Dashboard", u"20 Noviembre 2025", None))
+        self.label_5.setText(QCoreApplication.translate("Dashboard", fecha_actual.strftime("%d %B %Y"), None))
         self.label_7.setText(QCoreApplication.translate("Dashboard", u"Tasa del Dia", None))
         self.label_11.setText(QCoreApplication.translate("Dashboard", u"240 VEZ", None))
         self.label_12.setText(QCoreApplication.translate("Dashboard", u"Mesas Disponibles", None))
