@@ -29,7 +29,7 @@ class DashboardView(QWidget):
 
         # Datos de ejemplo iniciales (puedes reemplazar por tus services)
         self.set_metrics(
-            tasa_dia="240 VEZ",
+            tasa_dia="240 Bs",
             mesas_disponibles=20,
             ordenes_dia=23,
             variacion_ordenes="+15% Respecto a ayer",
