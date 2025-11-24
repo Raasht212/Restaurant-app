@@ -15,11 +15,13 @@ import numpy as np
 
 class DashboardView(QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, usuario, parent=None):
         super().__init__(parent)
         self.ui = Ui_Dashboard()
         self.ui.setupUi(self)
-
+        self.usuario = usuario
+          
+        self.ui.label.setText(f"Hola {usuario[1]}")
         # Ajustes visuales de la tabla
         self._setup_table()
 

@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
 
 
         # Instanciar vistas
-        self.dashboard_view = DashboardView()
+        self.dashboard_view = DashboardView(usuario)
         self.mesas_view = MesasView()
         self.menu_view = MenuView()
         self.inventario_view = InventarioView(es_admin=(self.usuario[2] == "admin"))
