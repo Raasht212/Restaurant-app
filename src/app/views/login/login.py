@@ -8,7 +8,6 @@ from ..main_window import MainWindow
 from src.app.config import BASE_DIR
 from ...db.connection import crear_conexion
 
-
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -136,10 +135,11 @@ class LoginWindow(QWidget):
                     "SELECT id, nombre, rol FROM usuarios WHERE usuario = ? AND clave = ?",
                     (usuario, clave)
                 )
-                usuario_data = cursor.fetchone()
+                
+                Usuario_data = cursor.fetchone()
 
-                if usuario_data:
-                    self.main_window = MainWindow(usuario_data)
+                if Usuario_data:
+                    self.main_window = MainWindow(Usuario_data)
                     self.main_window.show()
                     self.close()
                 else:

@@ -9,8 +9,6 @@ def resource_path(*relative_path):
     return os.path.join(base_path, *relative_path)
 
 
-
-
 # Ruta base del proyecto (dos niveles arriba de src/app/config.py -> proyecto/)
 BASE_DIR: Path = Path(__file__).resolve().parents[2]
 

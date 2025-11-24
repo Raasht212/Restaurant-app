@@ -4,6 +4,7 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from .config import BASE_DIR, LOG_LEVEL
 
+
 LOG_FILE = Path(BASE_DIR) / "logs" / "app.log"
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
